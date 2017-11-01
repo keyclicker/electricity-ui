@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>836</width>
+    <height>452</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">*{
+padding: 0px;
+margin: 0px;
+}</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <widget class="Canvas" name="graphicsView">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>0</width>
+      <height>0</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border: none;
+</string>
+    </property>
+    <property name="verticalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOn</enum>
+    </property>
+    <property name="horizontalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOn</enum>
+    </property>
+    <property name="sizeAdjustPolicy">
+     <enum>QAbstractScrollArea::AdjustIgnored</enum>
+    </property>
+   </widget>
+   <widget class="QWidget" name="sideMenu" native="true">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>320</width>
+      <height>451</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background: #3e4c8a;
+width: 290px;</string>
+    </property>
+    <layout class="QGridLayout" name="gridLayout_2">
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <item row="0" column="0">
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="font">
+          <font>
+           <family>Roboto Light</family>
+           <pointsize>18</pointsize>
+           <weight>50</weight>
+           <bold>false</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">margin-bottom: 8%;
+margin-top: 3%;
+color: #c5c1c0;</string>
+         </property>
+         <property name="text">
+          <string>Electricity</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="search">
+         <property name="styleSheet">
+          <string notr="true">QLineEdit {
+background: #37457c;
+border-radius: 12px;
+padding: 4px;
+margin-left: 10px;
+margin-right: 10px;
+margin-bottom: 8px; 
+color: rgb(157, 157, 157);
+}</string>
+         </property>
+         <property name="text">
+          <string>Search</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QTabWidget" name="tabWidget">
+         <property name="font">
+          <font>
+           <family>Roboto Light</family>
+           <pointsize>11</pointsize>
+          </font>
+         </property>
+         <property name="acceptDrops">
+          <bool>false</bool>
+         </property>
+         <property name="autoFillBackground">
+          <bool>false</bool>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QTabWidget::pane {
+margin-top: 0px;
+background: #324379;
+}
+
+QTabWidget::tab-bar {
+alignment: center;
+}
+
+QTabBar::tab {
+margin: 3px;
+margin-bottom: 10px;
+padding: 1px 20px 1px 20px;
+background: #37457c;
+border-radius: 10px;
+color: rgb(204, 204, 204);
+}
+
+QTabBar::tab:selected {
+border-color: #37457c;
+border-width: 1px;
+border-style: solid;
+background: rgb(61, 77, 140);
+}</string>
+         </property>
+         <property name="currentIndex">
+          <number>2</number>
+         </property>
+         <property name="usesScrollButtons">
+          <bool>false</bool>
+         </property>
+         <property name="tabsClosable">
+          <bool>false</bool>
+         </property>
+         <property name="movable">
+          <bool>false</bool>
+         </property>
+         <widget class="QWidget" name="all">
+          <property name="styleSheet">
+           <string notr="true">background: #324379;</string>
+          </property>
+          <attribute name="title">
+           <string>All</string>
+          </attribute>
+         </widget>
+         <widget class="QWidget" name="parts">
+          <property name="styleSheet">
+           <string notr="true">background: #324379;</string>
+          </property>
+          <attribute name="title">
+           <string>Parts</string>
+          </attribute>
+         </widget>
+         <widget class="QWidget" name="tab">
+          <property name="styleSheet">
+           <string notr="true">background: #324379;</string>
+          </property>
+          <attribute name="title">
+           <string>Meas. instrum.</string>
+          </attribute>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>Canvas</class>
+   <extends>QGraphicsView</extends>
+   <header>canvas.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

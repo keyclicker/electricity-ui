@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/resources">
+        <file>icons/Resistor_collision.png</file>
+        <file>icons/canvas.png</file>
+        <file>icons/Resistor.png</file>
+        <file>icons/Resistor_drag.png</file>
+    </qresource>
+</RCC>

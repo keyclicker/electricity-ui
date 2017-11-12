@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/resources">
+        <file>icons/Bulb_off.png</file>
+        <file>icons/Bulb_on.png</file>
+        <file>icons/Inductor.png</file>
+        <file>icons/Resistor.png</file>
+        <file>icons/Switch_off.png</file>
+        <file>icons/Switch_on.png</file>
+        <file>icons/Сapacitor.png</file>
+    </qresource>
+</RCC>

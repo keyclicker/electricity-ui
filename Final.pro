@@ -1,0 +1,74 @@
+QT += core widgets gui
+
+CONFIG += c++14
+CONFIG -= app_bundle
+
+DEFINES += QT_DEPRECATED_WARNINGS
+
+INCLUDEPATH += include/
+DEPENDPATH += include/
+
+
+HEADERS +=  include/Canvas.h \
+            include/Capacitor.hpp \
+            include/ComputeCycles.hpp \
+            include/Counter.hpp \
+            include/Debug.hpp \
+            include/Dimension.hpp \
+            include/EObject.hpp \
+            include/EObjectType.hpp \
+            include/GObject.h \
+            include/Graph.hpp \
+            include/Inductor.hpp \
+            include/Line.hpp \
+            include/MainWindow.h \
+            include/Resistor.hpp \
+            include/Rib.hpp \
+            include/Scheme.hpp \
+            include/Solver.hpp \
+            include/SourceOfCurrent.hpp \
+            include/SourceOfElectricity.hpp \
+            include/static.hpp \
+            include/Switcher.hpp \
+            include/TestSuite.hpp \
+    include/Point.hpp
+
+SOURCES += main.cpp \
+           source/Canvas.cpp \
+           source/Capacitor.cpp \
+           source/ComputeCycles.cpp \
+           source/Debug.cpp \
+           source/EObject.cpp \
+           source/GObject.cpp \
+           source/Graph.cpp \
+           source/Inductor.cpp \
+           source/Line.cpp \
+           source/MainWindow.cpp \
+           source/Point.cpp \
+           source/Resistor.cpp \
+           source/Rib.cpp \
+           source/Scheme.cpp \
+           source/Solver.cpp \
+           source/SourceOfCurrent.cpp \
+           source/SourceOfElectricity.cpp \
+           source/Switcher.cpp \
+           source/TestSuite.cpp
+
+OTHER_FILES += include/Counter.inl\
+
+INCLUDEPATH += E:/Eigen/
+DEPENDPATH += E:/Eigen/
+
+INCLUDEPATH += E:/boost/boost_1_65_1/include
+DEPENDPATH += E:/boost/boost_1_65_1/include
+
+#to do compilation faster
+CONFIG += precompile_header
+PRECOMPILED_HEADER = include/static.hpp
+HEADERS += static.hpp
+
+FORMS += \
+    forms/mainwindow.ui
+
+RESOURCES += \
+    resource.qrc

@@ -1,0 +1,42 @@
+#ifndef LINE_HPP_INCLUDED
+#define LINE_HPP_INCLUDED
+
+#include <QGraphicsItem>
+#include <QGraphicsLineItem>
+
+#include <Point.hpp>
+
+class Line : public QObject,
+			 public QGraphicsLineItem
+{
+	Q_OBJECT
+	public:
+		Line(QPointF, int);
+		Line(QPoint, QPoint);
+
+		void setCurrent(QPoint);
+
+		void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*) final;
+		int type() const override;
+
+	protected:
+		void mousePressEvent(QGraphicsSceneMouseEvent*) override;
+		void mouseReleaseEvent(QGraphicsSceneMouseEvent*) override;
+		void keyPressEvent(QKeyEvent*) override;
+
+	private:
+		void normalize();
+
+	public slots:
+		void moveTo(QPointF point);
+
+	private:
+		Point* mFirst;
+		Point* mSecond;
+		const qreal cLineWidth;
+		const int cGridSize;
+		QPointF mDifference;
+};
+
+
+#endif // COUNTER_HPP_INCLUDED

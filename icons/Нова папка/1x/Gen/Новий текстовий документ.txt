@@ -1,0 +1,8 @@
+"Battery.png"
+"Bulb_off.png"
+"Bulb_on.png"
+"Inductor.png"
+"Resistor.png"
+"Switch_off.png"
+"Switch_on.png"
+"Ñapacitor.png"

@@ -1,0 +1,22 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>icons/eLogo.png</file>
+        <file>icons/Resistor.png</file>
+        <file>icons/Resistor_collision.png</file>
+        <file>icons/Resistor_drag.png</file>
+        <file>icons/Battery.png</file>
+        <file>icons/Battery_collision.png</file>
+        <file>icons/Battery_drag.png</file>
+        <file>icons/Switch_off.png</file>
+        <file>icons/Switch_off_collision.png</file>
+        <file>icons/Switch_off_drag.png</file>
+        <file>icons/Switch_on.png</file>
+        <file>icons/Switch_on_collision.png</file>
+        <file>icons/Switch_on_drag.png</file>
+        <file>icons/play.png</file>
+        <file>icons/redo.png</file>
+        <file>icons/settings.png</file>
+        <file>icons/stop.png</file>
+        <file>icons/undo.png</file>
+    </qresource>
+</RCC>

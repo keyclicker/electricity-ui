@@ -1,0 +1,858 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1021</width>
+    <height>770</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="layoutDirection">
+   <enum>Qt::LeftToRight</enum>
+  </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">*{
+padding: 0px;
+margin: 0px;
+}</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <widget class="Canvas" name="graphicsView">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>1021</width>
+      <height>771</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border: none;</string>
+    </property>
+    <property name="verticalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOff</enum>
+    </property>
+    <property name="horizontalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOff</enum>
+    </property>
+    <property name="sizeAdjustPolicy">
+     <enum>QAbstractScrollArea::AdjustIgnored</enum>
+    </property>
+   </widget>
+   <widget class="QWidget" name="sideMenu" native="true">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>351</width>
+      <height>771</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background: #3e4c8a;
+width: 290px;</string>
+    </property>
+    <layout class="QGridLayout" name="gridLayout_2">
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <item row="0" column="0">
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="font">
+          <font>
+           <family>Roboto Light</family>
+           <pointsize>20</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">margin-bottom: 8px;
+margin-top: 4px;
+color: #c5c1c0;
+font-size: 20pt;</string>
+         </property>
+         <property name="text">
+          <string>Electricity</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="search">
+         <property name="font">
+          <font>
+           <family>Roboto Light</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QLineEdit {
+background: #37457c;
+border-radius: 12px;
+padding: 4px;
+margin-left: 15px;
+margin-right: 15px;
+margin-bottom: 8px; 
+font-size: 10pt;
+color: rgb(157, 157, 157);
+}</string>
+         </property>
+         <property name="text">
+          <string>Search</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QTabWidget" name="tabWidget">
+         <property name="font">
+          <font>
+           <family>Roboto Light</family>
+           <pointsize>11</pointsize>
+          </font>
+         </property>
+         <property name="acceptDrops">
+          <bool>false</bool>
+         </property>
+         <property name="autoFillBackground">
+          <bool>false</bool>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QTabWidget::pane {
+margin-top: 0px;
+background: #324379;
+}
+
+QTabWidget::tab-bar {
+alignment: center;
+}
+
+QTabBar::tab {
+margin: 4px;
+margin-bottom: 12px;
+padding: 1px 25px 1px 25px;
+background: #37457c;
+border-radius: 10px;
+color: rgb(204, 204, 204);
+}
+
+QTabBar::tab:hover {
+background: #39477e;
+}
+
+QTabBar::tab:selected {
+border-color: #37457c;
+border-width: 1px;
+border-style: solid;
+background: rgb(61, 77, 140);
+}
+
+</string>
+         </property>
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <property name="usesScrollButtons">
+          <bool>false</bool>
+         </property>
+         <property name="tabsClosable">
+          <bool>false</bool>
+         </property>
+         <property name="movable">
+          <bool>false</bool>
+         </property>
+         <widget class="QWidget" name="all">
+          <property name="styleSheet">
+           <string notr="true">QWidget {
+background: #324379;
+}
+
+QPushButton {
+border-radius: 15px;
+background: rgb(61, 77, 140);
+color: rgb(204, 204, 204);
+text-align: bottom;
+padding-bottom: 10px;
+
+}
+
+QPushButton:hover {
+background: rgb(71, 87, 150);
+}
+
+QPushButton:pressed {
+background: rgb(66, 82, 145);
+}</string>
+          </property>
+          <attribute name="title">
+           <string>All</string>
+          </attribute>
+          <widget class="QPushButton" name="resistor">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>20</y>
+             <width>91</width>
+             <height>91</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>Roboto</family>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">border-image: url(:/icons/icons/Interface/Resistor.png);</string>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>101</width>
+             <height>110</height>
+            </size>
+           </property>
+           <property name="checkable">
+            <bool>false</bool>
+           </property>
+           <property name="autoRepeat">
+            <bool>false</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>false</bool>
+           </property>
+          </widget>
+          <widget class="QPushButton" name="bulb">
+           <property name="geometry">
+            <rect>
+             <x>130</x>
+             <y>20</y>
+             <width>91</width>
+             <height>91</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>Roboto</family>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">border-image: url(:/icons/icons/Interface/Bulb.png);</string>
+           </property>
+          </widget>
+          <widget class="QPushButton" name="battery">
+           <property name="geometry">
+            <rect>
+             <x>240</x>
+             <y>20</y>
+             <width>91</width>
+             <height>91</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>Roboto</family>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">border-image: url(:/icons/icons/Interface/Battery.png);</string>
+           </property>
+          </widget>
+          <widget class="QPushButton" name="Switch">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>130</y>
+             <width>91</width>
+             <height>91</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>Roboto</family>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">border-image: url(:/icons/icons/Interface/Switch.png);</string>
+           </property>
+          </widget>
+          <widget class="QPushButton" name="capacitor">
+           <property name="geometry">
+            <rect>
+             <x>130</x>
+             <y>130</y>
+             <width>91</width>
+             <height>91</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>Roboto</family>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">border-image: url(:/icons/icons/Interface/Capacitor.png);</string>
+           </property>
+          </widget>
+          <widget class="QPushButton" name="inductor">
+           <property name="geometry">
+            <rect>
+             <x>240</x>
+             <y>130</y>
+             <width>91</width>
+             <height>91</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>Roboto</family>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">border-image: url(:/icons/icons/Interface/Inductor.png);</string>
+           </property>
+          </widget>
+          <widget class="QPushButton" name="voltmeter">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>240</y>
+             <width>91</width>
+             <height>91</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>Roboto</family>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">border-image: url(:/icons/icons/Interface/Voltmeter.png);</string>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>91</width>
+             <height>95</height>
+            </size>
+           </property>
+           <property name="checkable">
+            <bool>false</bool>
+           </property>
+          </widget>
+          <widget class="QPushButton" name="ammeter">
+           <property name="geometry">
+            <rect>
+             <x>130</x>
+             <y>240</y>
+             <width>91</width>
+             <height>91</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>Roboto</family>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">border-image: url(:/icons/icons/Interface/Ammeter.png);</string>
+           </property>
+          </widget>
+         </widget>
+         <widget class="QWidget" name="parts">
+          <property name="styleSheet">
+           <string notr="true">background: #324379;</string>
+          </property>
+          <attribute name="title">
+           <string>Parts</string>
+          </attribute>
+         </widget>
+         <widget class="QWidget" name="tab">
+          <property name="styleSheet">
+           <string notr="true">background: #324379;</string>
+          </property>
+          <attribute name="title">
+           <string>Meas. instrum.</string>
+          </attribute>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="buttons" native="true">
+    <property name="geometry">
+     <rect>
+      <x>630</x>
+      <y>5</y>
+      <width>90</width>
+      <height>45</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>30</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>90</width>
+      <height>16777215</height>
+     </size>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QWidget {
+background: #324379;
+border-radius: 10px;
+}
+
+QPushButton {
+border-radius: 5px;
+background: rgb(61, 77, 140);
+color: rgb(204, 204, 204);
+}
+
+QPushButton:hover {
+background: rgb(71, 87, 150);
+}
+
+QPushButton:pressed {
+background: rgb(66, 82, 145);
+}</string>
+    </property>
+    <layout class="QGridLayout" name="gridLayout_3">
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <item row="0" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QPushButton" name="setings">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>30</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="baseSize">
+          <size>
+           <width>0</width>
+           <height>59</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="../resource.qrc">
+           <normaloff>:/icons/icons/settings.png</normaloff>:/icons/icons/settings.png</iconset>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="play">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>30</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="../resource.qrc">
+           <normaloff>:/icons/icons/play.png</normaloff>
+           <activeon>:/icons/icons/stop.png</activeon>:/icons/icons/play.png</iconset>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="undoRedo" native="true">
+    <property name="geometry">
+     <rect>
+      <x>925</x>
+      <y>5</y>
+      <width>90</width>
+      <height>45</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>30</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>90</width>
+      <height>16777215</height>
+     </size>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QWidget {
+background: #324379;
+border-radius: 10px;
+}
+
+QPushButton {
+border-radius: 5px;
+background: rgb(61, 77, 140);
+color: rgb(204, 204, 204);
+}
+
+QPushButton:hover {
+background: rgb(71, 87, 150);
+}
+
+QPushButton:pressed {
+background: rgb(66, 82, 145);
+}</string>
+    </property>
+    <layout class="QGridLayout" name="gridLayout_4">
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <item row="0" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QPushButton" name="undo">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>30</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="baseSize">
+          <size>
+           <width>0</width>
+           <height>59</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="../resource.qrc">
+           <normaloff>:/icons/icons/undo.png</normaloff>:/icons/icons/undo.png</iconset>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="redo">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>30</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="../resource.qrc">
+           <normaloff>:/icons/icons/redo.png</normaloff>:/icons/icons/redo.png</iconset>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="menu" native="true">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>1021</width>
+      <height>771</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background: rgba(0, 0, 0, 100);</string>
+    </property>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="QWidget" name="menuPanel" native="true">
+       <property name="maximumSize">
+        <size>
+         <width>400</width>
+         <height>600</height>
+        </size>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QWidget {
+background: #3e4c8a;
+border-radius: 5px; 
+}
+
+QPushButton {
+font-family: Roboto Thin;
+font-size: 25px;
+padding: 5px;
+background: #37457c;
+border-radius: 10px;
+color: rgb(204, 204, 204);
+}
+
+QPushButton:hover {
+background-color: rgb(72, 85, 155);
+}
+
+QPushButton:pressed {
+background-color: rgb(65, 78, 148);
+}</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_5">
+        <item row="1" column="0">
+         <widget class="QPushButton" name="newFile">
+          <property name="text">
+           <string>New File</string>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="0">
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="3" column="0">
+         <widget class="QPushButton" name="save">
+          <property name="text">
+           <string>Save</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QPushButton" name="saveTo">
+          <property name="text">
+           <string>Save to File</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="cancel">
+            <property name="styleSheet">
+             <string notr="true">margin-bottom: 15px;
+padding: 8px;
+border-radius: 5px;</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../resource.qrc">
+              <normaloff>:/icons/icons/x.png</normaloff>:/icons/icons/x.png</iconset>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="5" column="0">
+         <widget class="QPushButton" name="load">
+          <property name="text">
+           <string>Load from File</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0">
+         <widget class="QPushButton" name="pushButton_2">
+          <property name="text">
+           <string>Exit</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <zorder>graphicsView</zorder>
+   <zorder>sideMenu</zorder>
+   <zorder>undoRedo</zorder>
+   <zorder>buttons</zorder>
+   <zorder>menu</zorder>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>Canvas</class>
+   <extends>QGraphicsView</extends>
+   <header>canvas.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="../resource.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>setings</sender>
+   <signal>clicked()</signal>
+   <receiver>menu</receiver>
+   <slot>show()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>646</x>
+     <y>22</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>537</x>
+     <y>134</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cancel</sender>
+   <signal>clicked()</signal>
+   <receiver>menu</receiver>
+   <slot>hide()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>684</x>
+     <y>97</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>751</x>
+     <y>95</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_2</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>641</x>
+     <y>261</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1017</x>
+     <y>335</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

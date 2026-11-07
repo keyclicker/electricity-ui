@@ -14,11 +14,13 @@ class SourceOfElectricity : public EObject,
     public:
 		SourceOfElectricity(const std::string& = "5",
 			char = '+', Dimension = Dimension::Normal);
+		~SourceOfElectricity();
         EObjectType getType() const override;
         int getDirection() const;
 		void setDirection(char);
 		void setDirection(const Point*);
 		void setCurrent(const cpp_float&) override;
+		void getInput() override;
 
     private:
 		char mDirection;

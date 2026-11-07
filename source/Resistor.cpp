@@ -38,6 +38,7 @@ void Resistor::setCurrent(const cpp_float& val)
 
 void Resistor::getInput()
 {
+	mInputWindow->setInput( getString(), getDimensionType() );
 	mInputWindow->show();
 }
 

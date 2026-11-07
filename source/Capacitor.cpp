@@ -33,6 +33,7 @@ EObjectType Capacitor::getType() const
 
 void Capacitor::getInput()
 {
+	mInputWindow->setInput( getString(), getDimensionType() );
 	mInputWindow->show();
 }
 

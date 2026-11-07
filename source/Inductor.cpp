@@ -33,6 +33,7 @@ EObjectType Inductor::getType() const
 
 void Inductor::getInput()
 {
+	mInputWindow->setInput( getString(), getDimensionType() );
 	mInputWindow->show();
 }
 

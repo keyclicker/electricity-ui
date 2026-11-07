@@ -56,6 +56,11 @@ std::string EObject::getDimension() const
 		return "Tera";
 }
 
+Dimension EObject::getDimensionType() const
+{
+	return mDimension;
+}
+
 void EObject::setDimension(const std::string& d)
 {
 	if (d == "Femto")

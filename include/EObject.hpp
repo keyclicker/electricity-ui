@@ -19,6 +19,7 @@ class EObject
 		void setDimension(Dimension);
 		virtual void setCurrent(const cpp_float&) = 0;
 		std::string getDimension() const;
+		Dimension getDimensionType() const;
 		void setDimension(const std::string&);
 
 		EObject(const EObject&) = delete;

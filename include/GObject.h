@@ -5,6 +5,7 @@
 #include <QGraphicsPixmapItem>
 #include <Point.hpp>
 #include <inputwindow.h>
+#include <static.hpp>
 
 enum class GObjectType
 {
@@ -35,6 +36,8 @@ class GObject : public QObject,
 		virtual void getInput();
 
 		void setFilename(const QString&);
+		void showCurrent(const cpp_float&);
+		static QString format(const cpp_float&);
 
 	private:
 		void normalize();

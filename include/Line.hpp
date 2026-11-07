@@ -7,6 +7,7 @@
 
 #include <Point.hpp>
 #include <QPointF>
+#include <static.hpp>
 
 class Line : public QObject,
 			 public QGraphicsLineItem
@@ -16,7 +17,7 @@ class Line : public QObject,
 		Line(QPointF, int);
 		Line(QPoint, QPoint);
 
-		void setCurrent(QPoint);
+		void setCurrent(const cpp_float&);
 
 		void updateLine();
 		void startDrawing();

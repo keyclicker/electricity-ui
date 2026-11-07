@@ -15,6 +15,9 @@
 #define VIEW this->scene()->views().first()
 #define CANVAS dynamic_cast<Canvas*>(VIEW)
 
+static const QColor cColor(69, 130, 120);
+static const QColor cActiveColor(110, 230, 190);
+
 Line::Line(QPointF pos,
 		   int grid) :
 	cLineWidth(26.f),
@@ -43,7 +46,7 @@ Line::Line(QPointF pos,
 	QPen linePen;
 	linePen.setStyle(Qt::SolidLine);
 	linePen.setCapStyle(Qt::RoundCap);
-	linePen.setColor( QColor(69, 130, 120) );
+	linePen.setColor(cColor);
 	linePen.setWidthF(cLineWidth);
 
 	this->setPen(linePen);
@@ -72,7 +75,7 @@ Line::Line(QPoint p1, QPoint p2) :
 	QPen linePen;
 	linePen.setStyle(Qt::SolidLine);
 	linePen.setCapStyle(Qt::RoundCap);
-	linePen.setColor( QColor(69, 130, 120) );
+	linePen.setColor(cColor);
 	linePen.setWidthF(cLineWidth);
 
 	this->setPen(linePen);
@@ -232,10 +235,12 @@ void Line::moveTo(QPointF point)
 	this->setPos(point - mDifference);
 }
 
-void Line::setCurrent(QPoint p)
+void Line::setCurrent(const cpp_float& current)
 {
-	if (p == mFirst->pos().toPoint());
-
+	// A wire carrying current lights up
+	QPen linePen = pen();
+	linePen.setColor( (current != 0)? cActiveColor : cColor );
+	setPen(linePen);
 }
 
 #undef VIEW

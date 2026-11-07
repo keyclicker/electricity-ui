@@ -38,7 +38,7 @@ void Inductor::getInput()
 
 void Inductor::setCurrent(const cpp_float& val)
 {
-
+	showCurrent(val);
 }
 
 Inductor::~Inductor()

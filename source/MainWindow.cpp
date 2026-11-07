@@ -4,6 +4,7 @@
 
 #include <QGraphicsDropShadowEffect>
 #include <QFileDialog>
+#include <QMessageBox>
 #include <QKeyEvent>
 #include <QScreen>
 #include <exception>
@@ -34,7 +35,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->setupUi(this);
 	setWindowIcon( QIcon(":/icons/icons/eLogo.png") );
 	mScene = new QGraphicsScene(this);
-	mSolver = new Solver(this);
 
 	initGraphics();
 
@@ -116,6 +116,15 @@ MainWindow::MainWindow(QWidget *parent) :
 			}
 	);
 
+	connect(ui->play, &QPushButton::toggled,
+			[this](bool checked)
+			{
+				if (checked)
+					this->startSimulation();
+				else
+					this->stopSimulation();
+			}
+	);
 }
 
 MainWindow::~MainWindow()
@@ -161,18 +170,7 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
 
 		case Qt::Key_R:
 		{
-			auto* solver = new Solver();
-			try
-			{
-				solver->run(mScene);
-			}
-			catch(std::exception& e)
-			{
-				qDebug() << e.what();
-			}
-
-			delete solver;
-
+			ui->play->toggle();
 			break;
 		}
 
@@ -250,6 +248,27 @@ void MainWindow::createElement()
 		connect( ui->graphicsView, SIGNAL( cursorChangePos(QPointF) ),
 				 newObject, SLOT( moveTo(QPointF) ) );
 	}
+}
+
+void MainWindow::startSimulation()
+{
+	mSolver.reset( new Solver() );
+
+	try
+	{
+		mSolver->run(mScene);
+	}
+	catch(std::exception& e)
+	{
+		QMessageBox::warning(this, "Electricity", e.what());
+		ui->play->setChecked(false);
+	}
+}
+
+void MainWindow::stopSimulation()
+{
+	// ~Solver resets the currents it has shown
+	mSolver.reset();
 }
 
 void MainWindow::initGraphics()

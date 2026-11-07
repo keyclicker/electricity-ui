@@ -6,6 +6,8 @@
 #include <Solver.hpp>
 #include <EObjectType.hpp>
 
+#include <memory>
+
 namespace Ui {
 class MainWindow;
 }
@@ -25,6 +27,8 @@ class MainWindow : public QMainWindow
 	private:
 		void initGraphics();
 		void createElement();
+		void startSimulation();
+		void stopSimulation();
 		void save(QString);
 		void load(QString);
 
@@ -37,7 +41,7 @@ class MainWindow : public QMainWindow
 	private:
 		Ui::MainWindow* ui;
 		QGraphicsScene* mScene;
-		Solver* mSolver;
+		std::unique_ptr<Solver> mSolver;
 		EObjectType mCreateObject;
 
 	//for undo/redo

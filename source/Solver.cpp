@@ -63,14 +63,19 @@ void Solver::run(QGraphicsScene* scene)
 {
 	initialize(scene);
 
+	if ( mMap.empty() )
+		return;
+
 	if (mVertixCount == 0)
 	{
+		// No branching: one loop, everything is in one rib
 		mScheme.resize( 1 );
 
 		auto list = scene->items();
 
 			for (auto& i : list)
-				if ( checkType(i->type(), GObjectType::Item) )
+				if ( checkType(i->type(), GObjectType::Item) ||
+					 checkType(i->type(), GObjectType::Line) )
 					mRib.push_back(i);
 
 		addRib(1, 1);
@@ -97,9 +102,9 @@ void Solver::run(QGraphicsScene* scene)
 						mRib.clear();
 					}
 			}
-
-		solve();
 	}
+
+	solve();
 }
 
 std::size_t Solver::findRib(QGraphicsItem* item)
@@ -146,6 +151,8 @@ std::size_t Solver::findRib(QGraphicsItem* item)
 		for ( const auto& i : mMap.at( next->scenePos().toPoint() ) )
 			if (!mUsed.at( make_pair(i) ))
 				return findRib( i );
+
+		throw std::logic_error("Uncorrect scheme");
 	}
 	else
 		return mPointNum.at( next->scenePos().toPoint() );
@@ -183,7 +190,7 @@ void Solver::solve()
 			j->setCurrent( (*res)(i) );
 
 		for (auto& j : mLines.at(i))
-			j->setCurrent( QPoint(0, 0) );
+			j->setCurrent( (*res)(i) );
 	}
 
 }
@@ -224,7 +231,7 @@ Solver::~Solver()
 
 	for (const auto& i : mLines)
 		for (auto& j : i)
-			j->setCurrent( QPoint(1, -3) );
+			j->setCurrent(null);
 
 	clear();
 }

@@ -217,6 +217,17 @@ void GObject::setFilename(const QString& name)
 	setPixmap(sPrefix + cFilename + sFormat);
 }
 
+void GObject::showCurrent(const cpp_float& current)
+{
+	// The solver's result, on hover
+	setToolTip( "I = " + format( abs(current) ) + " A" );
+}
+
+QString GObject::format(const cpp_float& value)
+{
+	return QString::number( value.convert_to<double>(), 'g', 4 );
+}
+
 void GObject::getInput()
 {
 

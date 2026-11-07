@@ -38,7 +38,7 @@ void Capacitor::getInput()
 
 void Capacitor::setCurrent(const cpp_float& val)
 {
-
+	showCurrent(val);
 }
 
 Capacitor::~Capacitor()

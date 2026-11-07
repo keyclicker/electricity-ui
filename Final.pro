@@ -35,7 +35,8 @@ HEADERS +=  include/Canvas.h \
     include/inputwindow.h \
     include/Bulb.hpp \
     include/Voltmeter.hpp \
-    include/Ammeter.hpp
+    include/Ammeter.hpp \
+    include/Meter.hpp
 
 SOURCES += main.cpp \
            source/Canvas.cpp \
@@ -60,7 +61,8 @@ SOURCES += main.cpp \
     source/inputwindow.cpp \
     source/Bulb.cpp \
     source/Ammeter.cpp \
-    source/Voltmeter.cpp
+    source/Voltmeter.cpp \
+    source/Meter.cpp
 
 OTHER_FILES += include/Counter.inl\
 

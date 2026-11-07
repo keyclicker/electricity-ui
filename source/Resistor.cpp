@@ -1,6 +1,4 @@
 #include <Resistor.hpp>
-#include <sstream>
-#include <iomanip>
 
 Resistor::Resistor(const std::string& resistance, Dimension dimension) :
 	EObject(resistance, dimension),
@@ -35,19 +33,7 @@ EObjectType Resistor::getType() const
 
 void Resistor::setCurrent(const cpp_float& val)
 {
-	if (val == cpp_float("0.0"));
-/*
-	else
-	{
-		std::stringstream ss;
-		ss
-			<< std::fixed
-			<< std::setprecision(std::numeric_limits<cpp_float>::digits10)
-			<< val;
-		mTextShow = QString::fromStdString( ss.str() );
-		showText();
-	}
-	*/
+	showCurrent(val);
 }
 
 void Resistor::getInput()

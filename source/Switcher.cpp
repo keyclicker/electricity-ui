@@ -40,7 +40,7 @@ void Switch::setState(bool state)
 
 void Switch::setCurrent(const cpp_float& val)
 {
-
+	showCurrent(val);
 }
 
 void Switch::getInput()

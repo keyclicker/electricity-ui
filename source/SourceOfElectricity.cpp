@@ -47,5 +47,5 @@ void SourceOfElectricity::setDirection(const Point* p)
 
 void SourceOfElectricity::setCurrent(const cpp_float& val)
 {
-
+	showCurrent(val);
 }

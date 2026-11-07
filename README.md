@@ -4,6 +4,9 @@ A 2017 school team project: an electric circuit simulator in Qt 5 / C++.
 Place components on a grid, wire them, and solve the currents with
 Kirchhoff's laws (Eigen + Boost.Multiprecision).
 
+![Demo: wire a 20 V battery, a 5 Ω resistor and a 5 Ω bulb, solve to
+2 A and 10 V, open the switch](docs/demo.gif)
+
 This is a reconstruction. The 2017 code split into two branches that
 were never joined, and the final version is lost. `master` merges them
 and fixes what kept the result from working.
@@ -41,6 +44,14 @@ Elements are large at 1:1: zoom out with the mouse wheel first.
   carrying current glow, hover an element for its current. `■` stops.
 - Toolbar: undo, redo. Settings button: New, Save, Load, Exit.
 - Middle-drag pans, Esc hides the sidebar, F11 is fullscreen.
+
+## Screenshots
+
+| Solved circuit | Input window |
+| --- | --- |
+| ![Solved: 2 A, 10 V, the bulb lit](docs/screenshots/solved-circuit.png) | ![Battery voltage set to 20 V](docs/screenshots/input-window.png) |
+| **Short circuit** | **Settings menu** |
+| ![A wire shorts the battery](docs/screenshots/short-circuit.png) | ![New, Save, Load, Exit](docs/screenshots/settings-menu.png) |
 
 ## Layout
 

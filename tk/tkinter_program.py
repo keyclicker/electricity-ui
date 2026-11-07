@@ -259,7 +259,6 @@ class Graph:
                                                                dash=(8, 4))
             self.line_coords.append([self.curr_x, self.curr_y, new_x, new_y])
             self.curr_x, self.curr_y = new_x, new_y
-            self.root.update()
             if time() - self.last_move > 1:
                 self.x_canvas.xview_moveto(1)
 

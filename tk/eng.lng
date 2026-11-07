@@ -1,0 +1,50 @@
+tst:tst
+amp:(A)Ampere
+vlt:(V)Volt
+wtt:(W)Watt
+ohm:(Ω)Ohm
+hrz:(Hz)Hertz
+fmt:(f)Femto
+pco:(p)Pico
+nan:(n)Nano
+mcr:(µ)Micro
+mil:(m)Milli
+cnt:(c)Centi
+dci:(d)Deci
+dca:(da)Deca
+hct:(h)Hecta
+klo:(k)Kilo
+meg:(M)Mega
+gig:(G)Giga
+ter:(T)Tera
+pet:(P)Peta
+mx1:Max value and
+mx2:units:
+mxo:87
+tim:s
+tps:Select scale type:
+tpo:80
+nme:Settings
+mtt:Choose the display method:
+mto:35
+mt0:Display graph of value
+mt1:from time to time
+mt2:Display real-time value
+mt3:
+stt:Start
+stp:Stop
+pdo:Divisions by:
+pdx:Axis X:
+pdy:Axis Y:
+off:Grid - off
+onn:Grid - on
+trx:105
+sav:Do you want to save the graph?
+cls:Quit
+qut:Quit
+sqt:Do you really want to quit?
+grp:Graph
+rtv:Value
+ert:Error
+erm:Camera didn`t founded!
+end:end

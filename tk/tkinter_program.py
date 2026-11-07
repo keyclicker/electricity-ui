@@ -9,7 +9,7 @@ from tkinter import ttk
 from time import time
 from datetime import datetime
 from PIL import ImageTk, Image, ImageFont, ImageDraw
-from math import ceil, degrees, atan
+from math import ceil, degrees, atan, atan2, tan, radians
 import numpy as np
 import cv2
 from random import randint
@@ -419,33 +419,22 @@ class RealTime:
         self.root.mainloop()
 
 def find_lines():
+    """Split the moved needle's lines into two groups; return their slopes.
+
+    One group is the needle's old position, the other its new one.
+    """
     global xored
     lines = cv2.HoughLinesP(xored, 1, np.pi / 180, 30, minLineLength=30, maxLineGap=15)
-    k_list = list()
-    try:
-        for line in lines:
-            for i in line:
-                x0, y0, x1, y1 = map(int, i)
-                try:
-                    k_list.append(float(y0 - y1) / float(x1 - x0))
-                except ZeroDivisionError:
-                    k_list.append(100000)
-        k_list.sort()
-        if k_list == None or len(k_list) < 2:
-            return None
-        else:
-            maxgap = abs(k_list[0] - k_list[1])
-            gapindex = 1
-            for i in range(1, len(k_list) - 1):
-                if abs(k_list[i] - k_list[i + 1]) > maxgap:
-                    maxgap = abs(k_list[i] - k_list[i + 1])
-                    gapindex = i + 1
-            frst, scnd = k_list[:gapindex], k_list[gapindex:]
-            frst = sum(frst) / len(frst)
-            scnd = sum(scnd) / len(scnd)
-            return frst, scnd
-    except:
+    if lines is None or len(lines) < 2:
         return None
+
+    # Group by angle: a near-vertical needle's slope flips between +-inf
+    angles = sorted(degrees(atan2(y0 - y1, x1 - x0)) % 180 for x0, y0, x1, y1 in lines[:, 0])
+    gaps = [b - a for a, b in zip(angles, angles[1:])]
+    split = gaps.index(max(gaps)) + 1
+    frst, scnd = angles[:split], angles[split:]
+
+    return tan(radians(sum(frst) / len(frst))), tan(radians(sum(scnd) / len(scnd)))
 
 def xor(img1, img2, k):
     """Mask pixels whose summed BGR difference reaches k: 255, else 0."""

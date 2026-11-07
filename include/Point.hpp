@@ -24,6 +24,7 @@ class Point : public QGraphicsItem
 	protected:
 		void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
 		void mouseReleaseEvent(QGraphicsSceneMouseEvent*) override;
+		QVariant itemChange(GraphicsItemChange, const QVariant&) override;
 		void hoverEnterEvent(QGraphicsSceneHoverEvent*) override;
 		void hoverLeaveEvent(QGraphicsSceneHoverEvent*) override;
 

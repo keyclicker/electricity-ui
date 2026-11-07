@@ -22,6 +22,7 @@ Point::Point(int grid,
 	mHover(false)
 {
 	this->setZValue(1.f);
+	this->setFlag(ItemSendsGeometryChanges);
 
 	mHoverBrush.setStyle(Qt::SolidPattern);
 	mHoverBrush.setColor(Qt::red);
@@ -63,7 +64,6 @@ void Point::paint(QPainter* painter,
 
 
 	painter->drawEllipse(boundingRect());
-	update();
 }
 
 void Point::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
@@ -135,6 +135,17 @@ void Point::mousePressEvent(QGraphicsSceneMouseEvent* event)
 	}
 }
 
+QVariant Point::itemChange(GraphicsItemChange change,
+						   const QVariant& value)
+{
+	// A wire is drawn between its two points: redraw it when one moves
+	if ( change == ItemPositionHasChanged && parentItem() &&
+		 parentItem()->type() == static_cast<int>(GObjectType::Line) )
+		static_cast<Line*>( parentItem() )->updateLine();
+
+	return QGraphicsItem::itemChange(change, value);
+}
+
 int Point::type() const
 {
 	return static_cast<int>(GObjectType::Point);
@@ -143,12 +154,14 @@ int Point::type() const
 void Point::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 {
 	mHover = true;
+	update();
 	QGraphicsItem::hoverEnterEvent(event);
 }
 
 void Point::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
 {
 	mHover = false;
+	update();
 	QGraphicsItem::hoverLeaveEvent(event);
 }
 

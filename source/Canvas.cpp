@@ -44,7 +44,6 @@ void Canvas::drawBackground(QPainter* painter, const QRectF& rect)
 
 	painter->fillRect( rect, QBrush( QColor(51, 88, 137) ) );
 	painter->drawLines( lines.data(), lines.size() );
-	update();
 }
 
 void Canvas::mousePressEvent(QMouseEvent* event)

@@ -27,10 +27,10 @@ Line::Line(QPointF pos,
 	mSecond->setPos(pos);
 
 	mFirst->setAcceptHoverEvents(true);
-	mFirst->setFlags(ItemIsMovable);
+	mFirst->setFlag(ItemIsMovable);
 
 	mSecond->setAcceptHoverEvents(true);
-	mSecond->setFlags(ItemIsMovable);
+	mSecond->setFlag(ItemIsMovable);
 
 	mSecond->moveBy(cGridSize, 0.f);
 
@@ -47,9 +47,7 @@ Line::Line(QPointF pos,
 	linePen.setWidthF(cLineWidth);
 
 	this->setPen(linePen);
-
-	this->setLine( QLineF( mFirst->pos() + QPointF(Point::cRadius, Point::cRadius),
-						   mSecond->pos() + QPointF(Point::cRadius, Point::cRadius) ) );
+	updateLine();
 
 
 	connect(VIEW, SIGNAL(cursorChangePos(QPointF)), this, SLOT(movePoint(QPointF)));
@@ -66,10 +64,10 @@ Line::Line(QPoint p1, QPoint p2) :
 	mSecond->setPos( p2 - QPoint(Point::cRadius, Point::cRadius) );
 
 	mFirst->setAcceptHoverEvents(true);
-	mFirst->setFlags(ItemIsMovable);
+	mFirst->setFlag(ItemIsMovable);
 
 	mSecond->setAcceptHoverEvents(true);
-	mSecond->setFlags(ItemIsMovable);
+	mSecond->setFlag(ItemIsMovable);
 
 	setAcceptHoverEvents(true);
 	setFlag(ItemIsMovable);
@@ -81,17 +79,13 @@ Line::Line(QPoint p1, QPoint p2) :
 	linePen.setWidthF(cLineWidth);
 
 	this->setPen(linePen);
-
-	this->setLine( QLineF( p1, p2) );
+	updateLine();
 }
 
-void Line::paint(QPainter* painter,
-				 const QStyleOptionGraphicsItem* style,
-				 QWidget* wgt)
+void Line::updateLine()
 {
 	this->setLine( QLineF( mFirst->pos() + QPointF(Point::cRadius, Point::cRadius),
 						   mSecond->pos() + QPointF(Point::cRadius, Point::cRadius) ) );
-	QGraphicsLineItem::paint(painter, style, wgt);
 }
 
 void Line::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)

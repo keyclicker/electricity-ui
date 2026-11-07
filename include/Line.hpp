@@ -18,7 +18,7 @@ class Line : public QObject,
 
 		void setCurrent(QPoint);
 
-		void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*) final;
+		void updateLine();
 		int type() const override;
 
 	protected:

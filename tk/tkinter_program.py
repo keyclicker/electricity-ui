@@ -1,16 +1,73 @@
 # coding=utf-8
 
-from Tkinter import *
-from tkMessageBox import askyesno, showerror
-from tkFileDialog import asksaveasfilename
-import ttk
+import os
+import sys
+from tkinter import *
+from tkinter.messagebox import askyesno, showerror
+from tkinter.filedialog import asksaveasfilename
+from tkinter import ttk
 from time import time
 from datetime import datetime
 from PIL import ImageTk, Image, ImageFont, ImageDraw
-from math import ceil, degrees, atan
+from math import ceil, degrees, atan, atan2, tan, radians
 import numpy as np
 import cv2
 from random import randint
+
+ASSETS = os.path.dirname(os.path.abspath(__file__))
+
+
+def asset(name):
+    """Return the path of a file shipped next to this script."""
+    return os.path.join(ASSETS, name)
+
+
+def set_icon(window):
+    """Give a window the app icon (`iconbitmap` takes .ico on Windows only)."""
+    window.icon = ImageTk.PhotoImage(Image.open(asset('icon.ico')), master=window)
+    window.iconphoto(False, window.icon)
+
+
+class VideoFile:
+    """A video file that plays like a live camera: in real time, looped."""
+
+    def __init__(self, path):
+        self.cap = cv2.VideoCapture(path)
+        self.fps = self.cap.get(cv2.CAP_PROP_FPS) or 25
+        self.start, self.pos, self.frame = time(), 0, None
+
+    def read(self):
+        """Return `(ok, frame)` for the frame due now, as `cv2` does."""
+        due = int((time() - self.start) * self.fps)
+
+        while self.pos <= due:
+            ok, frame = self.cap.read()
+
+            if ok:
+                self.frame, self.pos = frame, self.pos + 1
+            elif self.pos == 0:
+                return False, None
+            else:
+                self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+                self.start, self.pos, due = time(), 0, 0
+
+        return True, self.frame
+
+
+def open_camera(source=None):
+    """Open a webcam by index or a video file by path.
+
+    With no source, prefer webcam 1 (an external one) over webcam 0.
+    """
+    if source is None:
+        cam = cv2.VideoCapture(1)
+        return cam if cam.read()[0] else cv2.VideoCapture(0)
+
+    if source.isdigit():
+        return cv2.VideoCapture(int(source))
+
+    return VideoFile(source)
+
 
 class Value:
     def __init__(self, i, dem, type):
@@ -22,10 +79,10 @@ class Value:
         self.type = str(type)
 
     def __repr__(self):
-        return u'{0}, {1} {2}'.format(self.type, self.value, self.dem).encode('utf-8')
+        return u'{0}, {1} {2}'.format(self.type, self.value, self.dem)
 
     def __str__(self):
-        return u'{0}, {1} {2}'.format(self.type, self.value, self.dem).encode('utf-8')
+        return u'{0}, {1} {2}'.format(self.type, self.value, self.dem)
 
     def __float__(self):
         return float(self.value)
@@ -34,7 +91,7 @@ class Value:
         return int(self.value)
 
     def print_value(self):
-        print u'{0} = {1} {2}'.format(self.type, self.value, self.dem).encode('utf-8')
+        print(u'{0} = {1} {2}'.format(self.type, self.value, self.dem))
 
     def get_rozm(self):
         return self.type + ', ' + self.dem
@@ -62,7 +119,7 @@ class Graph:
         self.root.geometry('{0}x{1}+{2}+16'.format(self.width, self.height, self.x))
         self.root.title(title)
         self.root.resizable(0, 0)
-        self.root.iconbitmap('icon.ico')
+        set_icon(self.root)
         self.y_canvas = Canvas(self.root, width=self.width, height=self.height, bg=self.bg_color)
         self.x_canvas = Canvas(self.root, width=self.width - 50, height=self.height - 40 - self.y_step,
                                bg=self.bg_color, scrollregion=(0, 0, self.width - 50, self.height - 40 - self.y_step),
@@ -175,6 +232,7 @@ class Graph:
             t = 0
         else:
             t = time() - self.time
+        v = float(v)
         if not self.stop:
             if t > self.x_max:
                 self.addsecond(t)
@@ -201,7 +259,7 @@ class Graph:
                                                                dash=(8, 4))
             self.line_coords.append([self.curr_x, self.curr_y, new_x, new_y])
             self.curr_x, self.curr_y = new_x, new_y
-            self.root.update()
+            self.root.update_idletasks()  # tick() leaves Tk no idle time to redraw
             if time() - self.last_move > 1:
                 self.x_canvas.xview_moveto(1)
 
@@ -236,8 +294,8 @@ class Graph:
         img1 = Image.new('RGB', (int(self.x_canvas['scrollregion'].split(' ')[2]) + 50, self.height), self.bg_color)
         img2 = Image.new('RGB', (int(self.x_canvas['scrollregion'].split(' ')[2]), self.height - 40 - self.y_step),
                          self.bg_color)
-        fnt = ImageFont.truetype("Roboto-Bold.ttf", self.font[1] * 4 // 3)
-        h_fnt = ImageFont.truetype("Roboto-Bold.ttf", self.h_font[1] * 3 // 2)
+        fnt = ImageFont.truetype(asset('Roboto-Bold.ttf'), self.font[1] * 4 // 3)
+        h_fnt = ImageFont.truetype(asset('Roboto-Bold.ttf'), self.h_font[1] * 3 // 2)
         canv1 = ImageDraw.Draw(img1)
         canv2 = ImageDraw.Draw(img2)
         # Small canvas
@@ -268,7 +326,7 @@ class Graph:
                 canv2.line((i * self.x_step, int(self.x_canvas['height']) - 43, i * self.x_step, 0),
                            width=1, fill=self.grid_color)
         canv2.text((int(self.x_canvas['scrollregion'].split(' ')[2]) - 45,
-                    int(self.x_canvas['height']) - 40), ('t, ' + wrds['tim']).decode('utf-8'),
+                    int(self.x_canvas['height']) - 40), 't, ' + wrds['tim'],
                    font=h_fnt, fill=self.line_color)
         if self.grid:
             for i in range(1, self.y_amount + 1):
@@ -324,7 +382,7 @@ class RealTime:
         self.font = font
         self.x = x
         self.root = Tk()
-        self.root.iconbitmap('icon.ico')
+        set_icon(self.root)
         self.root.title(title)
         self.root.config(bg=self.bg_color)
         self.text = Label(self.root, width=12, text='000.00 ' + self.str, font=self.font, fg=self.font_color,
@@ -350,6 +408,7 @@ class RealTime:
         elif float(val) > 0:
             z = '+' + z
         self.text.config(text=z + ' ' + self.str)
+        self.root.update_idletasks()  # tick() leaves Tk no idle time to redraw
 
     def quit(self):
         stop_(cls=False)
@@ -361,49 +420,27 @@ class RealTime:
         self.root.mainloop()
 
 def find_lines():
+    """Split the moved needle's lines into two groups; return their slopes.
+
+    One group is the needle's old position, the other its new one.
+    """
     global xored
     lines = cv2.HoughLinesP(xored, 1, np.pi / 180, 30, minLineLength=30, maxLineGap=15)
-    k_list = list()
-    try:
-        for line in lines:
-            for i in line:
-                x0, y0, x1, y1 = map(int, i)
-                try:
-                    k_list.append(float(y0 - y1) / float(x1 - x0))
-                except ZeroDivisionError:
-                    k_list.append(100000)
-        k_list.sort()
-        if k_list == None or len(k_list) < 2:
-            return None
-        else:
-            maxgap = abs(k_list[0] - k_list[1])
-            gapindex = 1
-            for i in range(1, len(k_list) - 1):
-                if abs(k_list[i] - k_list[i + 1]) > maxgap:
-                    maxgap = abs(k_list[i] - k_list[i + 1])
-                    gapindex = i + 1
-            frst, scnd = k_list[:gapindex], k_list[gapindex:]
-            frst = sum(frst) / len(frst)
-            scnd = sum(scnd) / len(scnd)
-            return frst, scnd
-    except:
+    if lines is None or len(lines) < 2:
         return None
 
-def xor(img1, img2, k):
-    def color_xor(clr1, clr2):
-        b1, g1, r1 = map(int, clr1)
-        b2, g2, r2 = map(int, clr2)
-        if abs(r1 - r2) + abs(g1 - g2) + abs(b1 - b2) < k:
-            return 0
-        else:
-            return 255
+    # Group by angle: a near-vertical needle's slope flips between +-inf
+    angles = sorted(degrees(atan2(y0 - y1, x1 - x0)) % 180 for x0, y0, x1, y1 in lines[:, 0])
+    gaps = [b - a for a, b in zip(angles, angles[1:])]
+    split = gaps.index(max(gaps)) + 1
+    frst, scnd = angles[:split], angles[split:]
 
-    img3 = np.zeros(img1.shape, np.uint8)
-    img3 = cv2.cvtColor(img3, cv2.COLOR_BGR2GRAY)
-    for y in range(img1.shape[0]):
-        for x in range(img1.shape[1]):
-            img3[y, x] = color_xor(img1[y, x], img2[y, x])
-    return img3
+    return tan(radians(sum(frst) / len(frst))), tan(radians(sum(scnd) / len(scnd)))
+
+def xor(img1, img2, k):
+    """Mask pixels whose summed BGR difference reaches k: 255, else 0."""
+    diff = np.abs(img1.astype(int) - img2.astype(int)).sum(axis=2)
+    return np.where(diff < k, 0, 255).astype(np.uint8)
 
 def adjust_gamma(image, gamma=1.0):
     invGamma = 1.0 / gamma
@@ -544,7 +581,6 @@ def start_():
         height, width = cam.read()[1].shape[:2]
     except AttributeError:
         showerror(wrds['ert'], wrds['erm'])
-        stop_()
     else:
         maxv.config(state=DISABLED)
         dembox.config(state=DISABLED)
@@ -560,7 +596,6 @@ def start_():
         turn_btn.config(state=DISABLED)
         start_button.config(state=DISABLED)
         start = True
-        width = cam.read()[1].shape[1]
         root.iconify()
         cv2.namedWindow('Webcam')
         cv2.moveWindow('Webcam', 16, 16)
@@ -694,7 +729,6 @@ def tick():
             x10, y10 = 0, 0
             if method == 1:
                 graph.clear()
-            cv2.destroyWindow('xor')
             know = False
             cutted = False
 
@@ -712,12 +746,12 @@ root = Tk()
 root.geometry('320x120+{0}+{1}'.format(root.winfo_screenwidth() // 2 - 160, root.winfo_screenheight() // 2 - 160))
 root.config(bg=frame_color)
 root.title('Language/Язык/Мова')
-root.iconbitmap('icon.ico')
+set_icon(root)
 root.resizable(0, 0)
 Label(root, text='Language/Язык/Мова:', font=("Roboto", 20), fg=font_color, bg=frame_color).place(x=20, y=5)
-rus_img = ImageTk.PhotoImage(Image.open('rus.png').resize((70, 45), Image.LANCZOS))
-eng_img = ImageTk.PhotoImage(Image.open('eng.png').resize((70, 45), Image.LANCZOS))
-ukr_img = ImageTk.PhotoImage(Image.open('ukr.png').resize((70, 45), Image.LANCZOS))
+rus_img = ImageTk.PhotoImage(Image.open(asset('rus.png')).resize((70, 45), Image.LANCZOS))
+eng_img = ImageTk.PhotoImage(Image.open(asset('eng.png')).resize((70, 45), Image.LANCZOS))
+ukr_img = ImageTk.PhotoImage(Image.open(asset('ukr.png')).resize((70, 45), Image.LANCZOS))
 btn1 = Button(root, image=eng_img, compound=TOP, activeforeground=font_color, bg=btn_color,
               activebackground=selected_btn_color, bd=0, relief=FLAT, highlightthickness=0, command=lng1)
 btn2 = Button(root, image=rus_img, compound=TOP, activeforeground=font_color, bg=btn_color,
@@ -731,7 +765,7 @@ btn3.place(x=220, y=55)
 root.mainloop()
 try:
     wrds = dict()
-    language_file = open(lng, 'rt')
+    language_file = open(asset(lng), 'rt', encoding='utf-8')
     for line in language_file:
         wrds.update({line[:3]:line[4:-1]})
 except:
@@ -740,7 +774,7 @@ else:
     root = Tk()
     root.geometry(
         "320x675+{0}+{1}".format((root.winfo_screenwidth() - 320) // 2, (root.winfo_screenheight() - 675) // 2 - 35))
-    root.iconbitmap('icon.ico')
+    set_icon(root)
     root.title(wrds['nme'])
     root.resizable(0, 0)
     current = Value(6, 'V', 'U')
@@ -749,22 +783,18 @@ else:
     val = 0
     graph, rt, fframe, frame, cframe, xored = None, None, None, None, None, None
     width, height = 0, 0
-    cam = cv2.VideoCapture(1)
-    try:
-        height = cam.read()[1].shape[0]
-    except:
-        cam = cv2.VideoCapture(0)
+    cam = open_camera(sys.argv[1] if len(sys.argv) > 1 else None)
 
     # Максимальне значення & одиниці вимірювання
     rozm_frame = Frame(root, bg=frame_color, width=320, height=92)
     max_val = StringVar()
     max_val.set('6')
-    max_val.trace("w", callback)
+    max_val.trace_add("write", callback)
     maxv = Entry(rozm_frame, textvariable=max_val, width=4, font=("Courier", 14), justify=RIGHT)
     pre = StringVar()
-    pre.trace("w", callback)
+    pre.trace_add("write", callback)
     dem = StringVar()
-    dem.trace("w", callback)
+    dem.trace_add("write", callback)
     prebox = ttk.Combobox(rozm_frame, textvariable=pre, state='readonly', width=9, font=("Courier", 13))
     prebox['values'] = (wrds['fmt'], wrds['pco'], wrds['nan'], wrds['mcr'], wrds['mil'], wrds['cnt'], wrds['dci'], '',
                         wrds['dca'], wrds['hct'], wrds['klo'], wrds['meg'], wrds['gig'], wrds['ter'], wrds['pet'])
@@ -781,14 +811,14 @@ else:
     # Тип шкали
     real_type = 1
     type_frame = Frame(root, bg=frame_color, width=320, height=305)
-    img1 = ImageTk.PhotoImage(Image.open('shkala1.png').resize((130, 130)))
-    img2 = ImageTk.PhotoImage(Image.open('shkala2.png').resize((130, 130)))
-    img3 = ImageTk.PhotoImage(Image.open('shkala3.png').resize((130, 130)))
-    img4 = ImageTk.PhotoImage(Image.open('shkala4.png').resize((130, 130)))
-    img1s = ImageTk.PhotoImage(Image.open('shkala1s.png').resize((130, 130)))
-    img2s = ImageTk.PhotoImage(Image.open('shkala2s.png').resize((130, 130)))
-    img3s = ImageTk.PhotoImage(Image.open('shkala3s.png').resize((130, 130)))
-    img4s = ImageTk.PhotoImage(Image.open('shkala4s.png').resize((130, 130)))
+    img1 = ImageTk.PhotoImage(Image.open(asset('shkala1.png')).resize((130, 130)))
+    img2 = ImageTk.PhotoImage(Image.open(asset('shkala2.png')).resize((130, 130)))
+    img3 = ImageTk.PhotoImage(Image.open(asset('shkala3.png')).resize((130, 130)))
+    img4 = ImageTk.PhotoImage(Image.open(asset('shkala4.png')).resize((130, 130)))
+    img1s = ImageTk.PhotoImage(Image.open(asset('shkala1s.png')).resize((130, 130)))
+    img2s = ImageTk.PhotoImage(Image.open(asset('shkala2s.png')).resize((130, 130)))
+    img3s = ImageTk.PhotoImage(Image.open(asset('shkala3s.png')).resize((130, 130)))
+    img4s = ImageTk.PhotoImage(Image.open(asset('shkala4s.png')).resize((130, 130)))
     button1 = Button(type_frame, image=img1, bg=frame_color, activebackground=frame_color, command=set1type,
                      relief=FLAT,
                      bd=0)
@@ -825,8 +855,8 @@ else:
     podx, pody = StringVar(), StringVar()
     podx.set('10')
     pody.set('10')
-    podx.trace("w", pod_callback)
-    pody.trace("w", pod_callback)
+    podx.trace_add("write", pod_callback)
+    pody.trace_add("write", pod_callback)
     podx_entry = Entry(method_frame, textvariable=podx, width=4, font=("Courier", 14))
     pody_entry = Entry(method_frame, textvariable=pody, width=4, font=("Courier", 14))
     method1.place(x=15, y=27)

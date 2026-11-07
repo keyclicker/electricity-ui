@@ -45,6 +45,26 @@ Elements are large at 1:1: zoom out with the mouse wheel first.
 - Toolbar: undo, redo. Settings button: New, Save, Load, Exit.
 - Middle-drag pans, Esc hides the sidebar, F11 is fullscreen.
 
+## Meter reader (`tk/`)
+
+A separate Tkinter + OpenCV app: it reads an analog meter's needle
+through a webcam and plots it over time, or shows the live value.
+Python 3; `shell.nix` has its packages too.
+
+```sh
+python3 tk/tkinter_program.py            # webcam 1, else 0
+python3 tk/tkinter_program.py 2          # webcam 2
+python3 tk/tkinter_program.py meter.mp4  # a video, played like a webcam
+```
+
+Set the full-scale value and unit, pick the scale type (only the two
+left ones read values), press Start. Drag a box around the meter while
+the needle rests at 0: that frame is the reference. Space resets the
+box.
+
+Without Nix: Tkinter, OpenCV with a GUI backend (`opencv-python`, not
+`-headless`), Pillow, NumPy.
+
 ## Screenshots
 
 | Solved circuit | Input window |
@@ -64,8 +84,8 @@ Elements are large at 1:1: zoom out with the mouse wheel first.
 - `forms/`, `icons/`, `resource.qrc`: UI form and images
 - `test/`: Boost.Test projects; written for the older console solver,
   they don't build against this code
-- `tk/`: a separate Python 2 Tkinter + OpenCV app that reads an analog
-  meter's needle from a webcam (`tk/tkinter_program.py`)
+- `tk/`: the meter reader (`tk/tkinter_program.py`), ported from
+  the 2017 Python 2
 
 ## History
 

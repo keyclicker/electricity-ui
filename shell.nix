@@ -4,6 +4,14 @@
 
 let
   qtbase = pkgs.libsForQt5.qtbase;
+
+  # tk/: the webcam meter reader. cv2.imshow needs a GTK build of OpenCV
+  python = pkgs.python3.withPackages (ps: [
+    ps.tkinter
+    (ps.opencv4.override { enableGtk3 = true; })
+    ps.pillow
+    ps.numpy
+  ]);
 in
 pkgs.mkShell {
   packages = [
@@ -12,6 +20,7 @@ pkgs.mkShell {
     pkgs.eigen
     pkgs.boost
     pkgs.pkg-config
+    python
   ];
 
   # Let the unwrapped `./Final` find the xcb platform plugin

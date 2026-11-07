@@ -259,6 +259,7 @@ class Graph:
                                                                dash=(8, 4))
             self.line_coords.append([self.curr_x, self.curr_y, new_x, new_y])
             self.curr_x, self.curr_y = new_x, new_y
+            self.root.update_idletasks()  # tick() leaves Tk no idle time to redraw
             if time() - self.last_move > 1:
                 self.x_canvas.xview_moveto(1)
 
@@ -407,6 +408,7 @@ class RealTime:
         elif float(val) > 0:
             z = '+' + z
         self.text.config(text=z + ' ' + self.str)
+        self.root.update_idletasks()  # tick() leaves Tk no idle time to redraw
 
     def quit(self):
         stop_(cls=False)

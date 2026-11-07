@@ -70,6 +70,10 @@ void Point::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
 	QGraphicsItem::mouseReleaseEvent(event);
 	normalize();
+
+	if ( parentItem() &&
+		 parentItem()->type() == static_cast<int>(GObjectType::Line) )
+		static_cast<Line*>( parentItem() )->pointReleased();
 }
 
 void Point::normalize()
@@ -128,11 +132,14 @@ void Point::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
 	if (event->button() == Qt::RightButton)
 	{
-		Line* l = new Line(this->pos() -
-			QPointF(Point::cRadius, Point::cRadius), CANVAS->cGridSize);
+		// Start a wire from this pin
+		Line* l = new Line(this->scenePos(), CANVAS->cGridSize);
 
 		this->scene()->addItem(l);
+		l->startDrawing();
 	}
+	else
+		QGraphicsItem::mousePressEvent(event);
 }
 
 QVariant Point::itemChange(GraphicsItemChange change,
@@ -166,4 +173,4 @@ void Point::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
 }
 
 #undef VIEW
-#undef SCENE
+#undef CANVAS

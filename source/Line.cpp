@@ -48,9 +48,6 @@ Line::Line(QPointF pos,
 
 	this->setPen(linePen);
 	updateLine();
-
-
-	connect(VIEW, SIGNAL(cursorChangePos(QPointF)), this, SLOT(movePoint(QPointF)));
 }
 
 Line::Line(QPoint p1, QPoint p2) :
@@ -70,7 +67,7 @@ Line::Line(QPoint p1, QPoint p2) :
 	mSecond->setFlag(ItemIsMovable);
 
 	setAcceptHoverEvents(true);
-	setFlag(ItemIsMovable);
+	setFlags(ItemIsMovable | ItemIsFocusable);
 
 	QPen linePen;
 	linePen.setStyle(Qt::SolidLine);
@@ -91,9 +88,6 @@ void Line::updateLine()
 void Line::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
 	QGraphicsLineItem::mouseReleaseEvent(event);
-
-	disconnect(CANVAS, SIGNAL(cursorChangePos(QPointF)), this, SLOT(movePoint(QPointF)));
-
 	normalize();
 }
 
@@ -147,9 +141,40 @@ void Line::normalize()
 		update();
 }
 
+void Line::startDrawing()
+{
+	// The second end follows the cursor until a click drops it
+	CANVAS->setDrag(true);
+	this->setZValue(1.1);
+
+	connect( CANVAS, SIGNAL( cursorChangePos(QPointF) ),
+			 this, SLOT( movePoint(QPointF) )
+	);
+}
+
+void Line::pointReleased()
+{
+	const bool wasDrawing =
+		disconnect( CANVAS, SIGNAL( cursorChangePos(QPointF) ),
+					this, SLOT( movePoint(QPointF) )
+		);
+
+	if (wasDrawing)
+	{
+		CANVAS->setDrag(false);
+		this->setZValue(0);
+	}
+
+	// A wire of zero length would short its pin to itself
+	if ( mFirst->pos() == mSecond->pos() )
+		remove();
+}
+
 void Line::movePoint(QPointF point)
 {
-	this->mSecond->setPos(point);
+	// Center the end on the cursor, so the next click lands on it
+	mSecond->setPos( mapFromScene(point) -
+					 QPointF(Point::cRadius, Point::cRadius) );
 }
 
 int Line::type() const
@@ -162,8 +187,14 @@ void Line::keyPressEvent(QKeyEvent *event)
 	if (event->key() == Qt::Key_Delete)
 	{
 		CANVAS->setDrag(false);
-		this->scene()->removeItem(this);
+		remove();
 	}
+}
+
+void Line::remove()
+{
+	this->scene()->removeItem(this);
+	this->deleteLater();
 }
 
 void Line::mousePressEvent(QGraphicsSceneMouseEvent *event)

@@ -19,6 +19,8 @@ class Line : public QObject,
 		void setCurrent(QPoint);
 
 		void updateLine();
+		void startDrawing();
+		void pointReleased();
 		int type() const override;
 
 	protected:
@@ -26,8 +28,9 @@ class Line : public QObject,
 		void mouseReleaseEvent(QGraphicsSceneMouseEvent*) override;
 		void keyPressEvent(QKeyEvent*) override;
 
-private:
+	private:
 		void normalize();
+		void remove();
 
 	public slots:
 		void moveTo(QPointF point);

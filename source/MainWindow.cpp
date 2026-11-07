@@ -116,6 +116,24 @@ MainWindow::MainWindow(QWidget *parent) :
 			}
 	);
 
+	// File menu: an overlay opened by the settings button
+	ui->menu->hide();
+
+	connect(ui->setings, &QPushButton::pressed,
+			ui->menu, &QWidget::show);
+	connect(ui->cancel, &QPushButton::pressed,
+			ui->menu, &QWidget::hide);
+	connect(ui->newFile, &QPushButton::pressed,
+			this, &MainWindow::newFile);
+	connect(ui->save, &QPushButton::pressed,
+			this, &MainWindow::saveFile);
+	connect(ui->saveTo, &QPushButton::pressed,
+			this, &MainWindow::saveToFile);
+	connect(ui->load, &QPushButton::pressed,
+			this, &MainWindow::loadFromFile);
+	connect(ui->pushButton_2, &QPushButton::pressed,
+			this, &MainWindow::close);
+
 	connect(ui->play, &QPushButton::toggled,
 			[this](bool checked)
 			{
@@ -284,12 +302,31 @@ void MainWindow::initGraphics()
 	ui->graphicsView->setRenderHint( QPainter::Antialiasing );
 }
 
+void MainWindow::newFile()
+{
+	clearScene();
+	mFileName.clear();
+	ui->menu->hide();
+}
+
+void MainWindow::saveFile()
+{
+	if ( mFileName.isEmpty() )
+	{
+		saveToFile();
+		return;
+	}
+
+	save(mFileName);
+	ui->menu->hide();
+}
+
 void MainWindow::saveToFile()
 {
 	QString fileName = QFileDialog::getSaveFileName(
 		this,
 		"Save File",
-		"../bin",
+		QString(),
 		"File ( *.scheme )"
 	);
 
@@ -297,6 +334,8 @@ void MainWindow::saveToFile()
 		return;
 
 	save(fileName);
+	mFileName = fileName;
+	ui->menu->hide();
 }
 
 void MainWindow::loadFromFile()
@@ -305,7 +344,7 @@ void MainWindow::loadFromFile()
 	QString fileName = QFileDialog::getOpenFileName(
 		this,
 		"Open File",
-		"../bin",
+		QString(),
 		"File ( *.scheme )"
 	);
 
@@ -313,16 +352,33 @@ void MainWindow::loadFromFile()
 		return;
 
 	load(fileName);
+	mFileName = fileName;
+	ui->menu->hide();
 }
 
 void MainWindow::load(QString filename)
 {
-	auto list = mScene->items();
-
-		for (auto& i : list)
-			mScene->removeItem(i);
-
 	std::ifstream in( filename.toStdString() );
+	load(in);
+}
+
+void MainWindow::save(QString filename)
+{
+	std::ofstream out( filename.toStdString() );
+	save(out);
+}
+
+void MainWindow::clearScene()
+{
+	// The solver points to the items: stop it first
+	ui->play->setChecked(false);
+	ui->graphicsView->setDrag(false);
+	mScene->clear();
+}
+
+void MainWindow::load(std::istream& in)
+{
+	clearScene();
 
 	std::string str;
 
@@ -341,7 +397,7 @@ void MainWindow::load(QString filename)
 			}
 			else
 			{
-				GObject* gObj;
+				GObject* gObj = nullptr;
 				qreal rotation;
 				int px, py;
 				std::string dim;
@@ -369,24 +425,28 @@ void MainWindow::load(QString filename)
 				if (str == "Voltmetr")
 					gObj = new Voltmeter();
 
-				gObj->setRotation(rotation);
+				// No sprite for e.g. `SourceOfCurrent`: skip it
+				if (gObj == nullptr)
+					continue;
+
+				gObj->setAngle(rotation);
 				gObj->setPos(px, py);
 
 				EObject* eObj = dynamic_cast<EObject*>(gObj);
 				eObj->setValue(val);
 				eObj->setDimension(dim);
 
+				if (str == "Switch")
+					static_cast<Switch*>(gObj)->setState(
+						eObj->getValue() == Switch::ON );
+
 				mScene->addItem(gObj);
 			}
 		}
-
-	in.close();
 }
 
-void MainWindow::save(QString filename)
+void MainWindow::save(std::ostream& out)
 {
-	std::ofstream out( filename.toStdString() );
-
 	auto list = mScene->items();
 
 		for (auto& i : list)
@@ -451,7 +511,7 @@ void MainWindow::save(QString filename)
 						}
 					}
 
-				out << obj->getValue() << "\n";
+				out << obj->getString() << "\n";
 				out << obj->getDimension() << "\n";
 				out << i->pos().toPoint().x() << " "
 					<< i->pos().toPoint().y() << "\n";
@@ -469,8 +529,6 @@ void MainWindow::save(QString filename)
 					<< p->line().p2().toPoint().x() << "\n"
 					<< p->line().p2().toPoint().y() << "\n";
 			}
-
-	out.close();
 }
 
 void MainWindow::undo()

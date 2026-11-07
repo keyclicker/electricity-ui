@@ -71,7 +71,7 @@ void Point::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 	QGraphicsItem::mouseReleaseEvent(event);
 	normalize();
 
-	if ( parentItem() &&
+	if ( event->button() == Qt::LeftButton && parentItem() &&
 		 parentItem()->type() == static_cast<int>(GObjectType::Line) )
 		static_cast<Line*>( parentItem() )->pointReleased();
 }

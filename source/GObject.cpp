@@ -68,6 +68,7 @@ void GObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 			this->setZValue(zVal);
 			this->setPixmap( QPixmap(sPrefix + cFilename + sFormat) );
 			normalize();
+			changed();
 		}
 	}
 
@@ -94,9 +95,14 @@ void GObject::keyPressEvent(QKeyEvent *event)
 {
 	if (event->key() == Qt::Key_Delete)
     {
-		CANVAS->setDrag(false);
+		// Out of the scene, CANVAS is unreachable
+		Canvas* canvas = CANVAS;
+
+		canvas->setDrag(false);
 		this->scene()->removeItem(this);
 		this->deleteLater();
+
+		emit canvas->schemeChanged();
 	}
 }
 
@@ -226,6 +232,11 @@ void GObject::showCurrent(const cpp_float& current)
 QString GObject::format(const cpp_float& value)
 {
 	return QString::number( value.convert_to<double>(), 'g', 4 );
+}
+
+void GObject::changed()
+{
+	emit CANVAS->schemeChanged();
 }
 
 void GObject::getInput()

@@ -170,7 +170,12 @@ void Line::pointReleased()
 
 	// A wire of zero length would short its pin to itself
 	if ( mFirst->pos() == mSecond->pos() )
+	{
 		remove();
+		return;
+	}
+
+	changed();
 }
 
 void Line::movePoint(QPointF point)
@@ -189,8 +194,13 @@ void Line::keyPressEvent(QKeyEvent *event)
 {
 	if (event->key() == Qt::Key_Delete)
 	{
-		CANVAS->setDrag(false);
+		// Out of the scene, CANVAS is unreachable
+		Canvas* canvas = CANVAS;
+
+		canvas->setDrag(false);
 		remove();
+
+		emit canvas->schemeChanged();
 	}
 }
 
@@ -198,6 +208,11 @@ void Line::remove()
 {
 	this->scene()->removeItem(this);
 	this->deleteLater();
+}
+
+void Line::changed()
+{
+	emit CANVAS->schemeChanged();
 }
 
 void Line::mousePressEvent(QGraphicsSceneMouseEvent *event)
@@ -226,6 +241,7 @@ void Line::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 			this->setZValue(zVal);
 			normalize();
+			changed();
 		}
 	}
 }

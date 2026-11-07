@@ -36,6 +36,7 @@ class GObject : public QObject,
 		virtual void getInput();
 
 		void setFilename(const QString&);
+		void changed();
 		void showCurrent(const cpp_float&);
 		static QString format(const cpp_float&);
 

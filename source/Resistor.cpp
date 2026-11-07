@@ -24,6 +24,13 @@ Resistor::Resistor(const std::string& resistance, Dimension dimension) :
 				this->setDimension(val);
 			}
 	);
+
+	connect(mInputWindow, &InputWindow::accepted,
+			[this]()
+			{
+				this->changed();
+			}
+	);
 }
 
 EObjectType Resistor::getType() const

@@ -39,6 +39,7 @@ class Canvas : public QGraphicsView
 
 	signals:
 		void cursorChangePos(QPointF point);
+		void schemeChanged();
 
 	private:
 		qreal mOriginX, mOriginY;

@@ -1,6 +1,7 @@
 #include <ui_mainwindow.h>
 #include <MainWindow.h>
 #include <fstream>
+#include <sstream>
 
 #include <QGraphicsDropShadowEffect>
 #include <QFileDialog>
@@ -26,23 +27,23 @@ MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow),
 	mCreateObject(),
-	mCurFile(0),
-	mFullNum(0),
-	mWasChanged(false),
-	cFileName("undoredo"),
-	cDirectory("")
+	mHistory(),
+	mCurrent(0)
 {
 	ui->setupUi(this);
 	setWindowIcon( QIcon(":/icons/icons/eLogo.png") );
 	mScene = new QGraphicsScene(this);
 
 	initGraphics();
+	resetHistory();
 
-
-	//init load/save to file
-	//init undo/redo
-	//slots will contain mWasChange and mFullNum++
-	//i'm praying it will work with normal time
+	// Every finished edit is an undo step
+	connect(ui->graphicsView, &Canvas::schemeChanged,
+			this, &MainWindow::commit);
+	connect(ui->undo, &QPushButton::pressed,
+			this, &MainWindow::undo);
+	connect(ui->redo, &QPushButton::pressed,
+			this, &MainWindow::redo);
 
 	connect(ui->resistor, &QPushButton::pressed,
 			[this]() mutable
@@ -305,6 +306,7 @@ void MainWindow::initGraphics()
 void MainWindow::newFile()
 {
 	clearScene();
+	resetHistory();
 	mFileName.clear();
 	ui->menu->hide();
 }
@@ -352,6 +354,7 @@ void MainWindow::loadFromFile()
 		return;
 
 	load(fileName);
+	resetHistory();
 	mFileName = fileName;
 	ui->menu->hide();
 }
@@ -447,7 +450,9 @@ void MainWindow::load(std::istream& in)
 
 void MainWindow::save(std::ostream& out)
 {
-	auto list = mScene->items();
+	// Bottom first: loading restores the stacking, so a reloaded scheme
+	// saves to the same text (undo compares snapshots)
+	auto list = mScene->items(Qt::AscendingOrder);
 
 		for (auto& i : list)
 			if ( i->type() == static_cast<int>(GObjectType::Item) )
@@ -531,30 +536,46 @@ void MainWindow::save(std::ostream& out)
 			}
 }
 
-void MainWindow::undo()
+void MainWindow::resetHistory()
 {
-	if (mCurFile == 0)
+	std::ostringstream out;
+	save(out);
+
+	mHistory = { out.str() };
+	mCurrent = 0;
+}
+
+void MainWindow::commit()
+{
+	std::ostringstream out;
+	save(out);
+
+	// e.g. an element picked up and dropped back
+	if ( out.str() == mHistory.at(mCurrent) )
 		return;
 
-	QString num = QString::number( --mCurFile );
-	load(cDirectory + cFileName + num + ".scheme");
+	// Results belong to the old scheme
+	ui->play->setChecked(false);
+
+	mHistory.resize(mCurrent + 1);
+	mHistory.push_back( out.str() );
+	++mCurrent;
+}
+
+void MainWindow::undo()
+{
+	if (mCurrent == 0)
+		return;
+
+	std::istringstream in( mHistory.at(--mCurrent) );
+	load(in);
 }
 
 void MainWindow::redo()
 {
-	if (mCurFile == mFullNum)
+	if (mCurrent + 1 == mHistory.size())
 		return;
 
-	if (mCurFile < mFullNum && !mWasChanged)
-	{
-		QString num = QString::number( ++mCurFile );
-		load(cDirectory + cFileName + num + ".scheme");
-		return;
-	}
-
-	if (mCurFile < mFullNum && mWasChanged)
-	{
-		mFullNum = mCurFile;
-		return;
-	}
+	std::istringstream in( mHistory.at(++mCurrent) );
+	load(in);
 }

@@ -32,6 +32,13 @@ SourceOfElectricity::SourceOfElectricity( const std::string& voltage,
 				this->setDimension(val);
 			}
 	);
+
+	connect(mInputWindow, &InputWindow::accepted,
+			[this]()
+			{
+				this->changed();
+			}
+	);
 }
 
 SourceOfElectricity::~SourceOfElectricity()

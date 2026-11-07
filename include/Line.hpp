@@ -32,6 +32,7 @@ class Line : public QObject,
 	private:
 		void normalize();
 		void remove();
+		void changed();
 
 	public slots:
 		void moveTo(QPointF point);

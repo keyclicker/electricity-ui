@@ -24,6 +24,13 @@ Inductor::Inductor(const std::string& induction, Dimension dimension) :
 				this->setDimension(val);
 			}
 	);
+
+	connect(mInputWindow, &InputWindow::accepted,
+			[this]()
+			{
+				this->changed();
+			}
+	);
 }
 
 EObjectType Inductor::getType() const

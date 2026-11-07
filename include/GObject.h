@@ -22,6 +22,7 @@ class GObject : public QObject,
 		GObject(const QString&, QGraphicsItem* = nullptr);
 		virtual ~GObject() {}
 		int type() const override;
+		void setAngle(qreal);
 
 	protected:
 		void mousePressEvent(QGraphicsSceneMouseEvent*) override;
@@ -37,6 +38,7 @@ class GObject : public QObject,
 
 	private:
 		void normalize();
+		bool isColliding() const;
 
 	public slots:
 		void moveTo(QPointF point);

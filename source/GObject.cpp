@@ -26,8 +26,6 @@ GObject::GObject(const QString& file, QGraphicsItem* parent) :
 	this->setAcceptHoverEvents(true);
 	this->setFlags(ItemIsMovable | ItemIsFocusable);
 
-	const qreal radius = 10.f;
-
 	mFirst = new Point(50, this);
 	mSecond = new Point(50, this);
 	mFirst->setAcceptHoverEvents(true);
@@ -42,19 +40,13 @@ void GObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 	if(event->button() == Qt::LeftButton)
 	{
+		// An element can't be dropped onto another one
+		if ( CANVAS->isDrag() && isColliding() )
+			return;
+
 		CANVAS->setDrag( !CANVAS->isDrag() );
 
-		auto list = collidingItems();
-		auto flag = true;
-
-			for (const auto& i : list)
-				if ( i->type() == static_cast<int>(GObjectType::Item) )
-				{
-					flag = false;
-					break;
-				}
-
-		if (CANVAS->isDrag() && flag)
+		if (CANVAS->isDrag())
 		{
 			connect( CANVAS, SIGNAL( cursorChangePos(QPointF) ),
 					 this, SLOT( moveTo( QPointF) )
@@ -67,7 +59,7 @@ void GObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 			mDifference = mapToScene(event->pos()) - this->pos();
 		}
-		else if ( flag )
+		else
 		{
 			disconnect( CANVAS, SIGNAL( cursorChangePos(QPointF) ),
 						this, SLOT( moveTo(QPointF) )
@@ -81,19 +73,7 @@ void GObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 	if (CANVAS->isDrag() && event->button() == Qt::RightButton)
     {
-
-		this->setTransformOriginPoint( QPointF(
-			this->pixmap().width() / 2,
-			this->pixmap().height() / 2 )
-		);
-
-		const qreal cRadius = 10;
-		mFirst->setTransformOriginPoint(cRadius, cRadius);
-		mSecond->setTransformOriginPoint(cRadius, cRadius);
-		this->setRotation( this->rotation() + 90 );
-
-		mFirst->setRotation( mFirst->rotation() - 90);
-		mSecond->setRotation( mSecond->rotation() - 90);
+		setAngle( this->rotation() + 90 );
 
 		mDifference = QPoint( pixmap().width() / 2,
 							  pixmap().height() / 2);
@@ -116,6 +96,7 @@ void GObject::keyPressEvent(QKeyEvent *event)
     {
 		CANVAS->setDrag(false);
 		this->scene()->removeItem(this);
+		this->deleteLater();
 	}
 }
 
@@ -141,22 +122,32 @@ void GObject::moveTo(QPointF point)
 {
 	this->setVisible(true);
 
-	auto list = collidingItems();
-	auto flag = true;
-
-		for (const auto& i : list)
-			if ( i->type() == static_cast<int>(GObjectType::Item) )
-			{
-				flag = false;
-				break;
-			}
-
-	if( !flag )
+	if ( isColliding() )
 		this->setPixmap( QPixmap(sPrefix + cFilename + "_collision" + sFormat) );
     else
 		this->setPixmap( QPixmap(sPrefix + cFilename + "_drag" + sFormat) );
 
 	this->setPos(point - mDifference);
+}
+
+void GObject::setAngle(qreal angle)
+{
+	this->setTransformOriginPoint( pixmap().width() / 2,
+								   pixmap().height() / 2 );
+	this->setRotation(angle);
+
+	// Keep the pins unrotated: the solver joins them by scenePos()
+	mFirst->setRotation(-angle);
+	mSecond->setRotation(-angle);
+}
+
+bool GObject::isColliding() const
+{
+	for ( const auto& i : collidingItems() )
+		if ( i->type() == static_cast<int>(GObjectType::Item) )
+			return true;
+
+	return false;
 }
 
 int GObject::type() const

@@ -102,7 +102,8 @@ void Canvas::scalingTime(qreal x)
 
 void Canvas::animFinished()
 {
-	sender()->~QObject();
+	// Called from the timeline's own signal: free it after it returns
+	sender()->deleteLater();
 }
 
 

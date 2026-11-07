@@ -27,6 +27,21 @@ Without Nix (untested): install Qt 5 (`qmake`), `pkg-config`, Eigen 3
 (found via `pkg-config eigen3`) and Boost from your distro. Other
 locations: `qmake EIGEN_DIR=/path/to/eigen3 BOOST_DIR=/path/to/boost`.
 
+## Use
+
+Elements are large at 1:1: zoom out with the mouse wheel first.
+
+- Element: click it in the sidebar, click on the canvas to drop it.
+  Click it again to carry it, right-click while carrying to rotate.
+- Wire: right-click a pin, click where the wire ends (another pin or
+  an empty spot, then continue from there). Drag wire ends to adjust.
+- Value: right-click an element (a switch toggles).
+- Delete: click an element or wire, press Delete.
+- `▶` (or `R`): solve. Meters show readings, bulbs light up, wires
+  carrying current glow, hover an element for its current. `■` stops.
+- Toolbar: undo, redo. Settings button: New, Save, Load, Exit.
+- Middle-drag pans, Esc hides the sidebar, F11 is fullscreen.
+
 ## Layout
 
 - `Final.pro`, `deps.pri`: the qmake project and its Eigen/Boost setup

@@ -7,6 +7,8 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QPainterPath>
 #include <QKeyEvent>
+#include <QGraphicsView>
+#include <QList>
 #include <Canvas.h>
 #include <GObject.h>
 
@@ -38,7 +40,6 @@ Line::Line(QPointF pos,
 	setAcceptHoverEvents(true);
 	setFlags(ItemIsMovable | ItemIsFocusable);
 
-
 	QPen linePen;
 	linePen.setStyle(Qt::SolidLine);
 	linePen.setCapStyle(Qt::RoundCap);
@@ -49,6 +50,9 @@ Line::Line(QPointF pos,
 
 	this->setLine( QLineF( mFirst->pos() + QPointF(Point::cRadius, Point::cRadius),
 						   mSecond->pos() + QPointF(Point::cRadius, Point::cRadius) ) );
+
+
+	connect(VIEW, SIGNAL(cursorChangePos(QPointF)), this, SLOT(movePoint(QPointF)));
 }
 
 Line::Line(QPoint p1, QPoint p2) :
@@ -93,6 +97,9 @@ void Line::paint(QPainter* painter,
 void Line::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
 	QGraphicsLineItem::mouseReleaseEvent(event);
+
+	disconnect(CANVAS, SIGNAL(cursorChangePos(QPointF)), this, SLOT(movePoint(QPointF)));
+
 	normalize();
 }
 
@@ -143,7 +150,12 @@ void Line::normalize()
 			}
 		}
 
-	update();
+		update();
+}
+
+void Line::movePoint(QPointF point)
+{
+	this->mSecond->setPos(point);
 }
 
 int Line::type() const

@@ -3,6 +3,10 @@
 InputWindow::InputWindow(QString name, QString mu, QWidget* parent) :
 	QDialog(parent)
 {
+    this->setStyleSheet("background: #3e4c8a;"
+                        color: #DDD;"
+                        "border-radius: 5px;");
+
 	this->setWindowFlag(Qt::FramelessWindowHint);
 
     valueName = new QLabel(name);
@@ -29,28 +33,28 @@ InputWindow::InputWindow(QString name, QString mu, QWidget* parent) :
 		hLayout->addWidget(valueName);
 		hLayout->addWidget(line);
 		hLayout->addWidget(dimention);
-		hLayout->addWidget(muName);
+        hLayout->addWidget(muName);
 
-	ok = new QPushButton("OK");
-		cancel = new QPushButton("Cancel");
-		buttons = new QHBoxLayout();
-		buttons->addWidget(ok);
-		buttons->addWidget(cancel);
+        ok = new QPushButton("OK");
+        cancel = new QPushButton("Cancel");
+        buttons = new QHBoxLayout();
+        buttons->addWidget(ok);
+        buttons->addWidget(cancel);
 
-		vLayout = new QVBoxLayout();
-		vLayout->addLayout(hLayout);
-		vLayout->addLayout(buttons);
+        vLayout = new QVBoxLayout();
+        vLayout->addLayout(hLayout);
+        vLayout->addLayout(buttons);
 
     this->setLayout(vLayout);
 
-	connect(cancel, &QPushButton::pressed,
+    connect(cancel, &QPushButton::pressed,
 			[this]()
 			{
 				this->hide();
 			}
 	);
 
-	connect(ok, &QPushButton::pressed,
+    connect(ok, &QPushButton::pressed,
 			[this]()
 			{
 				emit getVal( line->text().toStdString() );

@@ -31,5 +31,19 @@
         <file>icons/Voltmeter.png</file>
         <file>icons/Voltmeter_collision.png</file>
         <file>icons/Voltmeter_drag.png</file>
+        <file>icons/play.png</file>
+        <file>icons/redo.png</file>
+        <file>icons/settings.png</file>
+        <file>icons/stop.png</file>
+        <file>icons/undo.png</file>
+        <file>icons/x.png</file>
+        <file>icons/Interface/Ammeter.png</file>
+        <file>icons/Interface/Battery.png</file>
+        <file>icons/Interface/Bulb.png</file>
+        <file>icons/Interface/Capacitor.png</file>
+        <file>icons/Interface/Inductor.png</file>
+        <file>icons/Interface/Resistor.png</file>
+        <file>icons/Interface/Switch.png</file>
+        <file>icons/Interface/Voltmeter.png</file>
     </qresource>
 </RCC>

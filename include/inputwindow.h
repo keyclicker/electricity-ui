@@ -11,6 +11,7 @@
 #include <QLabel>
 #include <QString>
 #include <string>
+//#include
 
 #include <Dimension.hpp>
 
@@ -28,11 +29,11 @@ class InputWindow : public QDialog
 		void getVal(std::string);
 
 	private:
-		QHBoxLayout *hLayout, *buttons;
+        QHBoxLayout *hLayout, *buttons;
 		QVBoxLayout *vLayout;
 
 		QLabel *valueName, *muName;
 		QLineEdit *line;
 		QComboBox *dimention;
-		QPushButton *ok, *cancel;
+        QPushButton *ok, *cancel;
 };

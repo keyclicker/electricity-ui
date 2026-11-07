@@ -21,10 +21,10 @@ class Canvas : public QGraphicsView
 
 		bool isDrag() const;
 		void setDrag(bool);
+		const int cGridSize;
 
 	protected:
 		void drawBackground(QPainter*, const QRectF&) override;
-		void mouseReleaseEvent(QMouseEvent*) override;
 		void mousePressEvent(QMouseEvent*) override;
 		void mouseMoveEvent(QMouseEvent*) override;
 		void wheelEvent(QWheelEvent*) override;
@@ -45,8 +45,6 @@ class Canvas : public QGraphicsView
 		int mScaleCount;
 		const int cScaleCount;
 		const qreal cScaleFactor;
-		const int cGridSize;
-		bool mWasPressed;
 		int mDir;
 		Mode mMode;
 		bool mDrag;

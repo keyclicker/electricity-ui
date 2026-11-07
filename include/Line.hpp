@@ -3,8 +3,10 @@
 
 #include <QGraphicsItem>
 #include <QGraphicsLineItem>
+#include <QObject>
 
 #include <Point.hpp>
+#include <QPointF>
 
 class Line : public QObject,
 			 public QGraphicsLineItem
@@ -24,7 +26,7 @@ class Line : public QObject,
 		void mouseReleaseEvent(QGraphicsSceneMouseEvent*) override;
 		void keyPressEvent(QKeyEvent*) override;
 
-	private:
+private:
 		void normalize();
 
 	public slots:
@@ -36,6 +38,9 @@ class Line : public QObject,
 		const qreal cLineWidth;
 		const int cGridSize;
 		QPointF mDifference;
+
+	private slots:
+		void movePoint(QPointF point);
 };
 
 

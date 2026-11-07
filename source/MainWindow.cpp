@@ -50,7 +50,7 @@ MainWindow::MainWindow(QWidget *parent) :
 				this->mCreateObject =
 					EObjectType::Resistor;
 				this->createElement();
-			}
+            }
 	);
 
 	connect(ui->battery, &QPushButton::pressed,
@@ -80,7 +80,6 @@ MainWindow::MainWindow(QWidget *parent) :
 			}
 	);
 
-
 	connect(ui->inductor, &QPushButton::pressed,
 			[this]() mutable
 			{
@@ -99,7 +98,7 @@ MainWindow::MainWindow(QWidget *parent) :
 			}
 	);
 
-	connect(ui->Voltmeter, &QPushButton::pressed,
+    connect(ui->voltmeter, &QPushButton::pressed,
 			[this]() mutable
 			{
 				this->mCreateObject =
@@ -128,6 +127,16 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 {
 	ui->sideMenu->resize( ui->sideMenu->width(),
 						  this->height() );
+
+    ui->undoRedo->move(ui->centralWidget->width()
+                       - ui->undoRedo->width() - 10, 10);
+
+    ui->buttons->move((ui->centralWidget->width()
+                       + ui->sideMenu->width())/2
+                      - ui->buttons->width()/2, 10);
+
+	ui->menu->resize( this->width(),
+					  this->height() );
 
 	QMainWindow::resizeEvent(event);
 }
@@ -254,10 +263,6 @@ void MainWindow::initGraphics()
 	ui->graphicsView->setScene( mScene );
 	ui->graphicsView->setTransformationAnchor( QGraphicsView::AnchorViewCenter );
 	ui->graphicsView->setRenderHint( QPainter::Antialiasing );
-
-	QGraphicsDropShadowEffect* effect = new QGraphicsDropShadowEffect(ui->sideMenu);
-	effect->setBlurRadius(5);
-	ui->sideMenu->setGraphicsEffect(effect);
 }
 
 void MainWindow::saveToFile()

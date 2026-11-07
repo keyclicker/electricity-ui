@@ -7,7 +7,13 @@
 #include <algorithm>
 #include <cmath>
 
-const qreal Point::cRadius = 10.f;
+#include "Line.hpp"
+#include "Canvas.h"
+
+#define VIEW this->scene()->views().first()
+#define CANVAS dynamic_cast<Canvas*>(VIEW)
+
+const qreal Point::cRadius = 18.f;
 
 Point::Point(int grid,
 			 QGraphicsItem* parent) :
@@ -118,6 +124,17 @@ void Point::normalize()
 	update();
 }
 
+void Point::mousePressEvent(QGraphicsSceneMouseEvent* event)
+{
+	if (event->button() == Qt::RightButton)
+	{
+		Line* l = new Line(this->pos() -
+			QPointF(Point::cRadius, Point::cRadius), CANVAS->cGridSize);
+
+		this->scene()->addItem(l);
+	}
+}
+
 int Point::type() const
 {
 	return static_cast<int>(GObjectType::Point);
@@ -135,3 +152,5 @@ void Point::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
 	QGraphicsItem::hoverLeaveEvent(event);
 }
 
+#undef VIEW
+#undef SCENE

@@ -75,3 +75,7 @@ commit each; each tag message describes its snapshot. `master` starts
 from `qt-2017-11-15.2` (logic branch: save/load, undo/redo), adds `tk/`
 from `tk-2017-11-14` (tag `v0-original`), and merges `qt-2017-11-15.4`
 (UI branch: polished UI).
+
+## License
+
+GPL-2.0-only: see [`LICENSE`](LICENSE).

@@ -2,7 +2,7 @@
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>
 #include <QDebug>
-#include <gobject.h>
+#include <GObject.h>
 
 #include <algorithm>
 #include <cmath>

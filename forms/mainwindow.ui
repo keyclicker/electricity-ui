@@ -799,7 +799,7 @@ border-radius: 5px;</string>
   <customwidget>
    <class>Canvas</class>
    <extends>QGraphicsView</extends>
-   <header>canvas.h</header>
+   <header>Canvas.h</header>
   </customwidget>
  </customwidgets>
  <resources>

@@ -1,0 +1,19 @@
+# Qt Creator state
+*.pro.user*
+*.autosave
+
+# In-source qmake builds (prefer an out-of-source build dir)
+build*/
+Makefile*
+.qmake.stash
+*.o
+moc_*
+ui_*.h
+qrc_*.cpp
+*.gch/
+/Final
+/Final.exe
+
+# Python
+__pycache__/
+*.pyc

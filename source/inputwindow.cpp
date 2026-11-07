@@ -1,10 +1,10 @@
-#include <InputWindow.h>
+#include <inputwindow.h>
 
 InputWindow::InputWindow(QString name, QString mu, QWidget* parent) :
 	QDialog(parent)
 {
     this->setStyleSheet("background: #3e4c8a;"
-                        color: #DDD;"
+                        "color: #DDD;"
                         "border-radius: 5px;");
 
 	this->setWindowFlag(Qt::FramelessWindowHint);

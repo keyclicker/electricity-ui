@@ -1,4 +1,4 @@
-#include <canvas.h>
+#include <Canvas.h>
 
 #include <QGraphicsItem>
 #include <QMouseEvent>

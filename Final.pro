@@ -64,16 +64,11 @@ SOURCES += main.cpp \
 
 OTHER_FILES += include/Counter.inl\
 
-INCLUDEPATH += E:/Eigen/
-DEPENDPATH += E:/Eigen/
-
-INCLUDEPATH += E:/boost/boost_1_65_1/include
-DEPENDPATH += E:/boost/boost_1_65_1/include
+include(deps.pri)
 
 #to do compilation faster
 CONFIG += precompile_header
 PRECOMPILED_HEADER = include/static.hpp
-HEADERS += static.hpp
 
 FORMS += \
     forms/mainwindow.ui

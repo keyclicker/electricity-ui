@@ -2,12 +2,18 @@
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>
 #include <QDebug>
-#include <gobject.h>
+#include <GObject.h>
 
 #include <algorithm>
 #include <cmath>
 
-const qreal Point::cRadius = 10.f;
+#include "Line.hpp"
+#include "Canvas.h"
+
+#define VIEW this->scene()->views().first()
+#define CANVAS dynamic_cast<Canvas*>(VIEW)
+
+const qreal Point::cRadius = 18.f;
 
 Point::Point(int grid,
 			 QGraphicsItem* parent) :
@@ -16,6 +22,7 @@ Point::Point(int grid,
 	mHover(false)
 {
 	this->setZValue(1.f);
+	this->setFlag(ItemSendsGeometryChanges);
 
 	mHoverBrush.setStyle(Qt::SolidPattern);
 	mHoverBrush.setColor(Qt::red);
@@ -57,13 +64,16 @@ void Point::paint(QPainter* painter,
 
 
 	painter->drawEllipse(boundingRect());
-	update();
 }
 
 void Point::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
 	QGraphicsItem::mouseReleaseEvent(event);
 	normalize();
+
+	if ( event->button() == Qt::LeftButton && parentItem() &&
+		 parentItem()->type() == static_cast<int>(GObjectType::Line) )
+		static_cast<Line*>( parentItem() )->pointReleased();
 }
 
 void Point::normalize()
@@ -118,6 +128,31 @@ void Point::normalize()
 	update();
 }
 
+void Point::mousePressEvent(QGraphicsSceneMouseEvent* event)
+{
+	if (event->button() == Qt::RightButton)
+	{
+		// Start a wire from this pin
+		Line* l = new Line(this->scenePos(), CANVAS->cGridSize);
+
+		this->scene()->addItem(l);
+		l->startDrawing();
+	}
+	else
+		QGraphicsItem::mousePressEvent(event);
+}
+
+QVariant Point::itemChange(GraphicsItemChange change,
+						   const QVariant& value)
+{
+	// A wire is drawn between its two points: redraw it when one moves
+	if ( change == ItemPositionHasChanged && parentItem() &&
+		 parentItem()->type() == static_cast<int>(GObjectType::Line) )
+		static_cast<Line*>( parentItem() )->updateLine();
+
+	return QGraphicsItem::itemChange(change, value);
+}
+
 int Point::type() const
 {
 	return static_cast<int>(GObjectType::Point);
@@ -126,12 +161,16 @@ int Point::type() const
 void Point::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 {
 	mHover = true;
+	update();
 	QGraphicsItem::hoverEnterEvent(event);
 }
 
 void Point::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
 {
 	mHover = false;
+	update();
 	QGraphicsItem::hoverLeaveEvent(event);
 }
 
+#undef VIEW
+#undef CANVAS

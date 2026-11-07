@@ -4,6 +4,7 @@
 #include <QGraphicsItem>
 #include <QBrush>
 #include <QPen>
+#include <QPoint>
 
 class Point : public QGraphicsItem
 {
@@ -21,7 +22,9 @@ class Point : public QGraphicsItem
 		Point& operator=(const Point&) = delete;
 
 	protected:
+		void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
 		void mouseReleaseEvent(QGraphicsSceneMouseEvent*) override;
+		QVariant itemChange(GraphicsItemChange, const QVariant&) override;
 		void hoverEnterEvent(QGraphicsSceneHoverEvent*) override;
 		void hoverLeaveEvent(QGraphicsSceneHoverEvent*) override;
 

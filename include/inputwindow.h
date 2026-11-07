@@ -1,8 +1,6 @@
 #ifndef INPUTWINDOW_H
 #define INPUTWINDOW_H
 
-#endif // INPUTWINDOW_H
-
 #include <QHBoxLayout>
 #include <QLineEdit>
 #include <QDialog>
@@ -11,6 +9,7 @@
 #include <QLabel>
 #include <QString>
 #include <string>
+//#include
 
 #include <Dimension.hpp>
 
@@ -21,18 +20,20 @@ class InputWindow : public QDialog
 	public:
 		InputWindow(QString, QString, QWidget* = nullptr);
 		virtual ~InputWindow();
-		Dimension dimFromStr(QString);
+		void setInput(const std::string&, Dimension);
 
 	signals:
 		void getDimension(Dimension);
 		void getVal(std::string);
 
 	private:
-		QHBoxLayout *hLayout, *buttons;
+        QHBoxLayout *hLayout, *buttons;
 		QVBoxLayout *vLayout;
 
 		QLabel *valueName, *muName;
 		QLineEdit *line;
 		QComboBox *dimention;
-		QPushButton *ok, *cancel;
+        QPushButton *ok, *cancel;
 };
+
+#endif // INPUTWINDOW_H

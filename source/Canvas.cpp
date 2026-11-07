@@ -1,4 +1,4 @@
-#include <canvas.h>
+#include <Canvas.h>
 
 #include <QGraphicsItem>
 #include <QMouseEvent>
@@ -18,123 +18,9 @@ Canvas::Canvas(QWidget* parent) :
 	mOriginY(0.f),
 	mMode(Mode::Editing),
 	cGridSize(50),
-	mWasPressed(false),
 	mDrag(false)
 {
 
-}
-
-void Canvas::mousePressEvent(QMouseEvent* event)
-{
-	switch (mMode)
-	{
-		case Mode::LinesDrawing:
-		{
-			Line* l = new Line(mapToScene(event->pos()), cGridSize);
-			scene()->addItem(l);
-			mMode = Mode::Editing;
-			break;
-		}
-
-		case Mode::Editing:
-		{
-			QGraphicsView::mousePressEvent(event);
-			break;
-		}
-
-		case Mode::Scrolling:
-		{
-			mOriginX = event->x();
-			mOriginY = event->y();
-			mWasPressed = true;
-			break;
-		}
-
-		case Mode::ObjectDrawing:
-		{
-
-			break;
-		}
-
-		default:
-		{
-			QGraphicsView::mousePressEvent(event);
-			break;
-		}
-	}
-}
-
-void Canvas::mouseReleaseEvent(QMouseEvent* event)
-{
-	switch (mMode)
-	{
-		case Mode::Scrolling:
-		{
-			mWasPressed = false;
-			break;
-		}
-
-		default:
-		{
-			QGraphicsView::mouseReleaseEvent(event);
-			break;
-		}
-	}
-}
-
-void Canvas::mouseMoveEvent(QMouseEvent* event)
-{
-	switch (mMode)
-	{
-		case Mode::Scrolling:
-		{
-			if (mWasPressed)
-			{
-				QPointF oldp = mapToScene(mOriginX, mOriginY);
-				QPointF newp = mapToScene(event->pos());
-				QPointF translation = newp - oldp;
-
-				setSceneRect(sceneRect().x() - translation.x(),
-							 sceneRect().y() - translation.y(),
-							 sceneRect().width(), sceneRect().height());
-
-				centerOn( - event->pos() );
-
-				mOriginX = event->x();
-				mOriginY = event->y();
-			}
-
-			break;
-		}
-
-		default:
-		{
-			QGraphicsView::mouseMoveEvent(event);
-			break;
-		}
-	}
-
-	emit cursorChangePos( mapToScene( event->pos() ) );
-}
-
-void Canvas::wheelEvent(QWheelEvent* event)
-{
-	if (event->delta() > 0)
-		centerOn( event->posF() );
-
-	mDir = (event->delta() > 0)? 1 : -1;
-	makeZoom();
-}
-
-void Canvas::scalingTime(qreal x)
-{
-	qreal scl = qPow(cScaleFactor, mDir);
-	scale( scl, scl );
-}
-
-void Canvas::animFinished()
-{
-	sender()->~QObject();
 }
 
 void Canvas::drawBackground(QPainter* painter, const QRectF& rect)
@@ -158,8 +44,68 @@ void Canvas::drawBackground(QPainter* painter, const QRectF& rect)
 
 	painter->fillRect( rect, QBrush( QColor(51, 88, 137) ) );
 	painter->drawLines( lines.data(), lines.size() );
-	update();
 }
+
+void Canvas::mousePressEvent(QMouseEvent* event)
+{
+	/*
+	Line* l = new Line(mapToScene(event->pos()), cGridSize);
+	scene()->addItem(l);
+	mMode = Mode::Editing;
+	break;
+*/
+	if (event->button() == Qt::MiddleButton)
+	{
+		mOriginX = event->x();
+		mOriginY = event->y();
+	}
+
+	QGraphicsView::mousePressEvent(event);
+}
+
+void Canvas::mouseMoveEvent(QMouseEvent* event)
+{
+	if (event->buttons() & Qt::MidButton)
+	{
+		QPointF oldp = mapToScene(mOriginX, mOriginY);
+		QPointF newp = mapToScene(event->pos());
+		QPointF translation = newp - oldp;
+
+		setSceneRect(sceneRect().x() - translation.x(),
+					 sceneRect().y() - translation.y(),
+					 sceneRect().width(), sceneRect().height());
+
+		mOriginX = event->x();
+		mOriginY = event->y();
+
+		this->centerOn(-this->pos());
+	}
+
+	emit cursorChangePos(mapToScene(event->pos()));
+	QGraphicsView::mouseMoveEvent(event);
+}
+
+void Canvas::wheelEvent(QWheelEvent* event)
+{
+	if (event->delta() > 0)
+		centerOn( event->posF() );
+
+	mDir = (event->delta() > 0)? 1 : -1;
+	makeZoom();
+}
+
+void Canvas::scalingTime(qreal x)
+{
+	qreal scl = qPow(cScaleFactor, mDir);
+	scale( scl, scl );
+}
+
+void Canvas::animFinished()
+{
+	// Called from the timeline's own signal: free it after it returns
+	sender()->deleteLater();
+}
+
 
 void Canvas::keyPressEvent(QKeyEvent* event)
 {
@@ -176,31 +122,6 @@ void Canvas::keyPressEvent(QKeyEvent* event)
 		{
 			mDir = -1;
 			makeZoom();
-			break;
-		}
-
-		case Qt::Key_P:
-		{
-			mMode = Mode::Scrolling;
-			break;
-		}
-
-		case Qt::Key_O:
-		{
-			mMode = Mode::LinesDrawing;
-			qDebug() << "LineDrawing\n";
-			break;
-		}
-
-		case Qt::Key_I:
-		{
-			mMode = Mode::Editing;
-			break;
-		}
-
-		case Qt::Key_U:
-		{
-			mMode = Mode::ObjectDrawing;
 			break;
 		}
 

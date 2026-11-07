@@ -37,8 +37,22 @@ cpp_float Rib::getResistance() const
 	cpp_float resistane("0.0");
 
 		for (const auto& i : mElements)
-			if (i->getType() == EObjectType::Resistor)
-				resistane += i->getValue();
+			switch ( i->getType() )
+			{
+				case EObjectType::Resistor:
+				case EObjectType::Bulb:
+				case EObjectType::Voltmeter:
+				case EObjectType::Ammeter:
+				{
+					resistane += i->getValue();
+					break;
+				}
+
+				default:
+				{
+					break;
+				}
+			}
 
 	return resistane;
 }

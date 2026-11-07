@@ -7,11 +7,16 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QPainterPath>
 #include <QKeyEvent>
+#include <QGraphicsView>
+#include <QList>
 #include <Canvas.h>
 #include <GObject.h>
 
 #define VIEW this->scene()->views().first()
 #define CANVAS dynamic_cast<Canvas*>(VIEW)
+
+static const QColor cColor(69, 130, 120);
+static const QColor cActiveColor(110, 230, 190);
 
 Line::Line(QPointF pos,
 		   int grid) :
@@ -25,10 +30,10 @@ Line::Line(QPointF pos,
 	mSecond->setPos(pos);
 
 	mFirst->setAcceptHoverEvents(true);
-	mFirst->setFlags(ItemIsMovable);
+	mFirst->setFlag(ItemIsMovable);
 
 	mSecond->setAcceptHoverEvents(true);
-	mSecond->setFlags(ItemIsMovable);
+	mSecond->setFlag(ItemIsMovable);
 
 	mSecond->moveBy(cGridSize, 0.f);
 
@@ -38,17 +43,14 @@ Line::Line(QPointF pos,
 	setAcceptHoverEvents(true);
 	setFlags(ItemIsMovable | ItemIsFocusable);
 
-
 	QPen linePen;
 	linePen.setStyle(Qt::SolidLine);
 	linePen.setCapStyle(Qt::RoundCap);
-	linePen.setColor( QColor(69, 130, 120) );
+	linePen.setColor(cColor);
 	linePen.setWidthF(cLineWidth);
 
 	this->setPen(linePen);
-
-	this->setLine( QLineF( mFirst->pos() + QPointF(Point::cRadius, Point::cRadius),
-						   mSecond->pos() + QPointF(Point::cRadius, Point::cRadius) ) );
+	updateLine();
 }
 
 Line::Line(QPoint p1, QPoint p2) :
@@ -62,32 +64,28 @@ Line::Line(QPoint p1, QPoint p2) :
 	mSecond->setPos( p2 - QPoint(Point::cRadius, Point::cRadius) );
 
 	mFirst->setAcceptHoverEvents(true);
-	mFirst->setFlags(ItemIsMovable);
+	mFirst->setFlag(ItemIsMovable);
 
 	mSecond->setAcceptHoverEvents(true);
-	mSecond->setFlags(ItemIsMovable);
+	mSecond->setFlag(ItemIsMovable);
 
 	setAcceptHoverEvents(true);
-	setFlag(ItemIsMovable);
+	setFlags(ItemIsMovable | ItemIsFocusable);
 
 	QPen linePen;
 	linePen.setStyle(Qt::SolidLine);
 	linePen.setCapStyle(Qt::RoundCap);
-	linePen.setColor( QColor(69, 130, 120) );
+	linePen.setColor(cColor);
 	linePen.setWidthF(cLineWidth);
 
 	this->setPen(linePen);
-
-	this->setLine( QLineF( p1, p2) );
+	updateLine();
 }
 
-void Line::paint(QPainter* painter,
-				 const QStyleOptionGraphicsItem* style,
-				 QWidget* wgt)
+void Line::updateLine()
 {
 	this->setLine( QLineF( mFirst->pos() + QPointF(Point::cRadius, Point::cRadius),
 						   mSecond->pos() + QPointF(Point::cRadius, Point::cRadius) ) );
-	QGraphicsLineItem::paint(painter, style, wgt);
 }
 
 void Line::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
@@ -143,7 +141,48 @@ void Line::normalize()
 			}
 		}
 
-	update();
+		update();
+}
+
+void Line::startDrawing()
+{
+	// The second end follows the cursor until a click drops it
+	CANVAS->setDrag(true);
+	this->setZValue(1.1);
+
+	connect( CANVAS, SIGNAL( cursorChangePos(QPointF) ),
+			 this, SLOT( movePoint(QPointF) )
+	);
+}
+
+void Line::pointReleased()
+{
+	const bool wasDrawing =
+		disconnect( CANVAS, SIGNAL( cursorChangePos(QPointF) ),
+					this, SLOT( movePoint(QPointF) )
+		);
+
+	if (wasDrawing)
+	{
+		CANVAS->setDrag(false);
+		this->setZValue(0);
+	}
+
+	// A wire of zero length would short its pin to itself
+	if ( mFirst->pos() == mSecond->pos() )
+	{
+		remove();
+		return;
+	}
+
+	changed();
+}
+
+void Line::movePoint(QPointF point)
+{
+	// Center the end on the cursor, so the next click lands on it
+	mSecond->setPos( mapFromScene(point) -
+					 QPointF(Point::cRadius, Point::cRadius) );
 }
 
 int Line::type() const
@@ -155,9 +194,25 @@ void Line::keyPressEvent(QKeyEvent *event)
 {
 	if (event->key() == Qt::Key_Delete)
 	{
-		CANVAS->setDrag(false);
-		this->scene()->removeItem(this);
+		// Out of the scene, CANVAS is unreachable
+		Canvas* canvas = CANVAS;
+
+		canvas->setDrag(false);
+		remove();
+
+		emit canvas->schemeChanged();
 	}
+}
+
+void Line::remove()
+{
+	this->scene()->removeItem(this);
+	this->deleteLater();
+}
+
+void Line::changed()
+{
+	emit CANVAS->schemeChanged();
 }
 
 void Line::mousePressEvent(QGraphicsSceneMouseEvent *event)
@@ -186,6 +241,7 @@ void Line::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 			this->setZValue(zVal);
 			normalize();
+			changed();
 		}
 	}
 }
@@ -195,10 +251,12 @@ void Line::moveTo(QPointF point)
 	this->setPos(point - mDifference);
 }
 
-void Line::setCurrent(QPoint p)
+void Line::setCurrent(const cpp_float& current)
 {
-	if (p == mFirst->pos().toPoint());
-
+	// A wire carrying current lights up
+	QPen linePen = pen();
+	linePen.setColor( (current != 0)? cActiveColor : cColor );
+	setPen(linePen);
 }
 
 #undef VIEW

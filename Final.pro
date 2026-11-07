@@ -35,7 +35,8 @@ HEADERS +=  include/Canvas.h \
     include/inputwindow.h \
     include/Bulb.hpp \
     include/Voltmeter.hpp \
-    include/Ammeter.hpp
+    include/Ammeter.hpp \
+    include/Meter.hpp
 
 SOURCES += main.cpp \
            source/Canvas.cpp \
@@ -60,20 +61,16 @@ SOURCES += main.cpp \
     source/inputwindow.cpp \
     source/Bulb.cpp \
     source/Ammeter.cpp \
-    source/Voltmeter.cpp
+    source/Voltmeter.cpp \
+    source/Meter.cpp
 
 OTHER_FILES += include/Counter.inl\
 
-INCLUDEPATH += E:/Eigen/
-DEPENDPATH += E:/Eigen/
-
-INCLUDEPATH += E:/boost/boost_1_65_1/include
-DEPENDPATH += E:/boost/boost_1_65_1/include
+include(deps.pri)
 
 #to do compilation faster
 CONFIG += precompile_header
 PRECOMPILED_HEADER = include/static.hpp
-HEADERS += static.hpp
 
 FORMS += \
     forms/mainwindow.ui

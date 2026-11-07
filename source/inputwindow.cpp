@@ -1,8 +1,15 @@
-#include <InputWindow.h>
+#include <inputwindow.h>
+
+#include <QCursor>
+#include <QRegularExpressionValidator>
 
 InputWindow::InputWindow(QString name, QString mu, QWidget* parent) :
 	QDialog(parent)
 {
+    this->setStyleSheet("background: #3e4c8a;"
+                        "color: #DDD;"
+                        "border-radius: 5px;");
+
 	this->setWindowFlag(Qt::FramelessWindowHint);
 
     valueName = new QLabel(name);
@@ -10,18 +17,22 @@ InputWindow::InputWindow(QString name, QString mu, QWidget* parent) :
 	line = new QLineEdit();
     line->setFocus();
 
+	// A plain positive number: the solver parses it as `cpp_float`
+	line->setValidator( new QRegularExpressionValidator(
+		QRegularExpression("\\d*\\.?\\d+"), line) );
+
 		dimention = new QComboBox();
-		dimention->addItem("Femto");
-		dimention->addItem("Pico");
-		dimention->addItem("Nano");
-		dimention->addItem("Micro");
-		dimention->addItem("Milli");
-		dimention->addItem(" ");
-		dimention->addItem("Kilo");
-		dimention->addItem("Mega");
-		dimention->addItem("Giga");
-		dimention->addItem("Tera");
-		dimention->addItem("Peta");
+		dimention->addItem("Femto", static_cast<int>(Dimension::Femto));
+		dimention->addItem("Pico", static_cast<int>(Dimension::Pico));
+		dimention->addItem("Nano", static_cast<int>(Dimension::Nano));
+		dimention->addItem("Micro", static_cast<int>(Dimension::Micro));
+		dimention->addItem("Milli", static_cast<int>(Dimension::Milli));
+		dimention->addItem(" ", static_cast<int>(Dimension::Normal));
+		dimention->addItem("Kilo", static_cast<int>(Dimension::Kilo));
+		dimention->addItem("Mega", static_cast<int>(Dimension::Mega));
+		dimention->addItem("Giga", static_cast<int>(Dimension::Giga));
+		dimention->addItem("Tera", static_cast<int>(Dimension::Tera));
+		dimention->addItem("Peta", static_cast<int>(Dimension::Peta));
 
 	muName = new QLabel(mu);
 
@@ -29,33 +40,37 @@ InputWindow::InputWindow(QString name, QString mu, QWidget* parent) :
 		hLayout->addWidget(valueName);
 		hLayout->addWidget(line);
 		hLayout->addWidget(dimention);
-		hLayout->addWidget(muName);
+        hLayout->addWidget(muName);
 
-	ok = new QPushButton("OK");
-		cancel = new QPushButton("Cancel");
-		buttons = new QHBoxLayout();
-		buttons->addWidget(ok);
-		buttons->addWidget(cancel);
+        ok = new QPushButton("OK");
+        cancel = new QPushButton("Cancel");
+        buttons = new QHBoxLayout();
+        buttons->addWidget(ok);
+        buttons->addWidget(cancel);
 
-		vLayout = new QVBoxLayout();
-		vLayout->addLayout(hLayout);
-		vLayout->addLayout(buttons);
+        vLayout = new QVBoxLayout();
+        vLayout->addLayout(hLayout);
+        vLayout->addLayout(buttons);
 
     this->setLayout(vLayout);
 
-	connect(cancel, &QPushButton::pressed,
+    connect(cancel, &QPushButton::pressed,
 			[this]()
 			{
-				this->hide();
+				this->reject();
 			}
 	);
 
-	connect(ok, &QPushButton::pressed,
+    connect(ok, &QPushButton::pressed,
 			[this]()
 			{
+				if ( !line->hasAcceptableInput() )
+					return;
+
 				emit getVal( line->text().toStdString() );
-				emit getDimension( dimFromStr( dimention->currentText() ) );
-				this->hide();
+				emit getDimension( static_cast<Dimension>(
+					dimention->currentData().toInt() ) );
+				this->accept();
 			}
 	);
 }
@@ -65,28 +80,12 @@ InputWindow::~InputWindow()
 
 }
 
-Dimension InputWindow::dimFromStr(QString s)
+void InputWindow::setInput(const std::string& value, Dimension dimension)
 {
-	if (s == "Femto")
-		return Dimension::Femto;
-	if (s == "Pico")
-		return Dimension::Pico;
-	if (s == "Nano")
-		return Dimension::Nano;
-	if (s == "Micro")
-		return Dimension::Micro;
-	if (s == "Milli")
-		return Dimension::Milli;
-	if (s == " ")
-		return Dimension::Normal;
-	if (s == "Kilo")
-		return Dimension::Kilo;
-	if (s == "Mega")
-		return Dimension::Mega;
-	if (s == "Giga")
-		return Dimension::Giga;
-	if (s == "Tera")
-		return Dimension::Tera;
-	if (s == "Petta")
-		return Dimension::Peta;
+	// Start from the element's current value, next to the cursor
+	line->setText( QString::fromStdString(value) );
+	dimention->setCurrentIndex(
+		dimention->findData( static_cast<int>(dimension) ) );
+
+	this->move( QCursor::pos() );
 }

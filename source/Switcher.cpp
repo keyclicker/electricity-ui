@@ -40,19 +40,11 @@ void Switch::setState(bool state)
 
 void Switch::setCurrent(const cpp_float& val)
 {
-
+	showCurrent(val);
 }
 
 void Switch::getInput()
 {
-	if (getValue() == Switch::ON)
-	{
-		setFilename("Switch_off");
-		setValue("0.0");
-	}
-	else
-	{
-		setFilename("Switch_on");
-		setValue("1.0");
-	}
+	setState( getValue() == Switch::OFF );
+	changed();
 }

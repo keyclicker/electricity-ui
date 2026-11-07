@@ -5,6 +5,7 @@
 #include <QGraphicsPixmapItem>
 #include <Point.hpp>
 #include <inputwindow.h>
+#include <static.hpp>
 
 enum class GObjectType
 {
@@ -22,6 +23,7 @@ class GObject : public QObject,
 		GObject(const QString&, QGraphicsItem* = nullptr);
 		virtual ~GObject() {}
 		int type() const override;
+		void setAngle(qreal);
 
 	protected:
 		void mousePressEvent(QGraphicsSceneMouseEvent*) override;
@@ -34,9 +36,13 @@ class GObject : public QObject,
 		virtual void getInput();
 
 		void setFilename(const QString&);
+		void changed();
+		void showCurrent(const cpp_float&);
+		static QString format(const cpp_float&);
 
 	private:
 		void normalize();
+		bool isColliding() const;
 
 	public slots:
 		void moveTo(QPointF point);

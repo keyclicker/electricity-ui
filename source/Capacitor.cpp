@@ -24,6 +24,13 @@ Capacitor::Capacitor(const std::string& capacity, Dimension dim) :
 				this->setDimension(val);
 			}
 	);
+
+	connect(mInputWindow, &InputWindow::accepted,
+			[this]()
+			{
+				this->changed();
+			}
+	);
 }
 
 EObjectType Capacitor::getType() const
@@ -33,12 +40,13 @@ EObjectType Capacitor::getType() const
 
 void Capacitor::getInput()
 {
+	mInputWindow->setInput( getString(), getDimensionType() );
 	mInputWindow->show();
 }
 
 void Capacitor::setCurrent(const cpp_float& val)
 {
-
+	showCurrent(val);
 }
 
 Capacitor::~Capacitor()

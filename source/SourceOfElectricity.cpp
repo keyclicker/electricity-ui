@@ -16,6 +16,34 @@ SourceOfElectricity::SourceOfElectricity( const std::string& voltage,
 				   pixmap().height() / 2 - Point::cRadius);
 	mSecond->setPos(pixmap().width() - Point::cRadius,
 					pixmap().height() / 2 - Point::cRadius);
+
+	mInputWindow = new InputWindow("", "V");
+
+	connect(mInputWindow, &InputWindow::getVal,
+			[this](const auto& val)
+			{
+				this->setValue(val);
+			}
+	);
+
+	connect(mInputWindow, &InputWindow::getDimension,
+			[this](const auto& val)
+			{
+				this->setDimension(val);
+			}
+	);
+
+	connect(mInputWindow, &InputWindow::accepted,
+			[this]()
+			{
+				this->changed();
+			}
+	);
+}
+
+SourceOfElectricity::~SourceOfElectricity()
+{
+	delete mInputWindow;
 }
 
 EObjectType SourceOfElectricity::getType() const
@@ -45,7 +73,13 @@ void SourceOfElectricity::setDirection(const Point* p)
 		mDirection = '-';
 }
 
+void SourceOfElectricity::getInput()
+{
+	mInputWindow->setInput( getString(), getDimensionType() );
+	mInputWindow->show();
+}
+
 void SourceOfElectricity::setCurrent(const cpp_float& val)
 {
-
+	showCurrent(val);
 }

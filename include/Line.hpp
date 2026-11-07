@@ -3,8 +3,11 @@
 
 #include <QGraphicsItem>
 #include <QGraphicsLineItem>
+#include <QObject>
 
 #include <Point.hpp>
+#include <QPointF>
+#include <static.hpp>
 
 class Line : public QObject,
 			 public QGraphicsLineItem
@@ -14,9 +17,11 @@ class Line : public QObject,
 		Line(QPointF, int);
 		Line(QPoint, QPoint);
 
-		void setCurrent(QPoint);
+		void setCurrent(const cpp_float&);
 
-		void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*) final;
+		void updateLine();
+		void startDrawing();
+		void pointReleased();
 		int type() const override;
 
 	protected:
@@ -26,6 +31,8 @@ class Line : public QObject,
 
 	private:
 		void normalize();
+		void remove();
+		void changed();
 
 	public slots:
 		void moveTo(QPointF point);
@@ -36,6 +43,9 @@ class Line : public QObject,
 		const qreal cLineWidth;
 		const int cGridSize;
 		QPointF mDifference;
+
+	private slots:
+		void movePoint(QPointF point);
 };
 
 

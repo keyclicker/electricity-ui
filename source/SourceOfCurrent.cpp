@@ -17,7 +17,7 @@ SourceOfCurrent::SourceOfCurrent(const std::string& current,
 
 EObjectType SourceOfCurrent::getType() const
 {
-	return EObjectType::SourceOfCurrent;
+    return EObjectType::SourceOfCurrent;
 }
 
 int SourceOfCurrent::getDirection() const

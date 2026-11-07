@@ -1,14 +1,14 @@
 #ifndef AMMETER_HPP_INCLUDED
 #define AMMETER_HPP_INCLUDED
 
-#include <Resistor.hpp>
+#include <Meter.hpp>
 
-class Ammeter : public Resistor
+class Ammeter : public Meter
 {
 	public:
 		Ammeter();
+		EObjectType getType() const override;
 		void setCurrent(const cpp_float&) final;
-		void getInput() final;
 };
 
 #endif

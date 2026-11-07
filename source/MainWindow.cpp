@@ -1,9 +1,11 @@
 #include <ui_mainwindow.h>
 #include <MainWindow.h>
 #include <fstream>
+#include <sstream>
 
 #include <QGraphicsDropShadowEffect>
 #include <QFileDialog>
+#include <QMessageBox>
 #include <QKeyEvent>
 #include <QScreen>
 #include <exception>
@@ -25,24 +27,23 @@ MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow),
 	mCreateObject(),
-	mCurFile(0),
-	mFullNum(0),
-	mWasChanged(false),
-	cFileName("undoredo"),
-	cDirectory("")
+	mHistory(),
+	mCurrent(0)
 {
 	ui->setupUi(this);
 	setWindowIcon( QIcon(":/icons/icons/eLogo.png") );
 	mScene = new QGraphicsScene(this);
-	mSolver = new Solver(this);
 
 	initGraphics();
+	resetHistory();
 
-
-	//init load/save to file
-	//init undo/redo
-	//slots will contain mWasChange and mFullNum++
-	//i'm praying it will work with normal time
+	// Every finished edit is an undo step
+	connect(ui->graphicsView, &Canvas::schemeChanged,
+			this, &MainWindow::commit);
+	connect(ui->undo, &QPushButton::pressed,
+			this, &MainWindow::undo);
+	connect(ui->redo, &QPushButton::pressed,
+			this, &MainWindow::redo);
 
 	connect(ui->resistor, &QPushButton::pressed,
 			[this]() mutable
@@ -50,7 +51,7 @@ MainWindow::MainWindow(QWidget *parent) :
 				this->mCreateObject =
 					EObjectType::Resistor;
 				this->createElement();
-			}
+            }
 	);
 
 	connect(ui->battery, &QPushButton::pressed,
@@ -80,7 +81,6 @@ MainWindow::MainWindow(QWidget *parent) :
 			}
 	);
 
-
 	connect(ui->inductor, &QPushButton::pressed,
 			[this]() mutable
 			{
@@ -99,7 +99,7 @@ MainWindow::MainWindow(QWidget *parent) :
 			}
 	);
 
-	connect(ui->Voltmeter, &QPushButton::pressed,
+    connect(ui->voltmeter, &QPushButton::pressed,
 			[this]() mutable
 			{
 				this->mCreateObject =
@@ -117,6 +117,33 @@ MainWindow::MainWindow(QWidget *parent) :
 			}
 	);
 
+	// File menu: an overlay opened by the settings button
+	ui->menu->hide();
+
+	connect(ui->setings, &QPushButton::pressed,
+			ui->menu, &QWidget::show);
+	connect(ui->cancel, &QPushButton::pressed,
+			ui->menu, &QWidget::hide);
+	connect(ui->newFile, &QPushButton::pressed,
+			this, &MainWindow::newFile);
+	connect(ui->save, &QPushButton::pressed,
+			this, &MainWindow::saveFile);
+	connect(ui->saveTo, &QPushButton::pressed,
+			this, &MainWindow::saveToFile);
+	connect(ui->load, &QPushButton::pressed,
+			this, &MainWindow::loadFromFile);
+	connect(ui->pushButton_2, &QPushButton::pressed,
+			this, &MainWindow::close);
+
+	connect(ui->play, &QPushButton::toggled,
+			[this](bool checked)
+			{
+				if (checked)
+					this->startSimulation();
+				else
+					this->stopSimulation();
+			}
+	);
 }
 
 MainWindow::~MainWindow()
@@ -128,6 +155,16 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 {
 	ui->sideMenu->resize( ui->sideMenu->width(),
 						  this->height() );
+
+    ui->undoRedo->move(ui->centralWidget->width()
+                       - ui->undoRedo->width() - 10, 10);
+
+    ui->buttons->move((ui->centralWidget->width()
+                       + ui->sideMenu->width())/2
+                      - ui->buttons->width()/2, 10);
+
+	ui->menu->resize( this->width(),
+					  this->height() );
 
 	QMainWindow::resizeEvent(event);
 }
@@ -152,18 +189,7 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
 
 		case Qt::Key_R:
 		{
-			auto* solver = new Solver();
-			try
-			{
-				solver->run(mScene);
-			}
-			catch(std::exception& e)
-			{
-				qDebug() << e.what();
-			}
-
-			delete solver;
-
+			ui->play->toggle();
 			break;
 		}
 
@@ -243,6 +269,27 @@ void MainWindow::createElement()
 	}
 }
 
+void MainWindow::startSimulation()
+{
+	mSolver.reset( new Solver() );
+
+	try
+	{
+		mSolver->run(mScene);
+	}
+	catch(std::exception& e)
+	{
+		QMessageBox::warning(this, "Electricity", e.what());
+		ui->play->setChecked(false);
+	}
+}
+
+void MainWindow::stopSimulation()
+{
+	// ~Solver resets the currents it has shown
+	mSolver.reset();
+}
+
 void MainWindow::initGraphics()
 {
 	QRect screen = QGuiApplication::primaryScreen()->geometry();
@@ -254,10 +301,26 @@ void MainWindow::initGraphics()
 	ui->graphicsView->setScene( mScene );
 	ui->graphicsView->setTransformationAnchor( QGraphicsView::AnchorViewCenter );
 	ui->graphicsView->setRenderHint( QPainter::Antialiasing );
+}
 
-	QGraphicsDropShadowEffect* effect = new QGraphicsDropShadowEffect(ui->sideMenu);
-	effect->setBlurRadius(5);
-	ui->sideMenu->setGraphicsEffect(effect);
+void MainWindow::newFile()
+{
+	clearScene();
+	resetHistory();
+	mFileName.clear();
+	ui->menu->hide();
+}
+
+void MainWindow::saveFile()
+{
+	if ( mFileName.isEmpty() )
+	{
+		saveToFile();
+		return;
+	}
+
+	save(mFileName);
+	ui->menu->hide();
 }
 
 void MainWindow::saveToFile()
@@ -265,7 +328,7 @@ void MainWindow::saveToFile()
 	QString fileName = QFileDialog::getSaveFileName(
 		this,
 		"Save File",
-		"../bin",
+		QString(),
 		"File ( *.scheme )"
 	);
 
@@ -273,6 +336,8 @@ void MainWindow::saveToFile()
 		return;
 
 	save(fileName);
+	mFileName = fileName;
+	ui->menu->hide();
 }
 
 void MainWindow::loadFromFile()
@@ -281,7 +346,7 @@ void MainWindow::loadFromFile()
 	QString fileName = QFileDialog::getOpenFileName(
 		this,
 		"Open File",
-		"../bin",
+		QString(),
 		"File ( *.scheme )"
 	);
 
@@ -289,16 +354,34 @@ void MainWindow::loadFromFile()
 		return;
 
 	load(fileName);
+	resetHistory();
+	mFileName = fileName;
+	ui->menu->hide();
 }
 
 void MainWindow::load(QString filename)
 {
-	auto list = mScene->items();
-
-		for (auto& i : list)
-			mScene->removeItem(i);
-
 	std::ifstream in( filename.toStdString() );
+	load(in);
+}
+
+void MainWindow::save(QString filename)
+{
+	std::ofstream out( filename.toStdString() );
+	save(out);
+}
+
+void MainWindow::clearScene()
+{
+	// The solver points to the items: stop it first
+	ui->play->setChecked(false);
+	ui->graphicsView->setDrag(false);
+	mScene->clear();
+}
+
+void MainWindow::load(std::istream& in)
+{
+	clearScene();
 
 	std::string str;
 
@@ -317,7 +400,7 @@ void MainWindow::load(QString filename)
 			}
 			else
 			{
-				GObject* gObj;
+				GObject* gObj = nullptr;
 				qreal rotation;
 				int px, py;
 				std::string dim;
@@ -345,25 +428,31 @@ void MainWindow::load(QString filename)
 				if (str == "Voltmetr")
 					gObj = new Voltmeter();
 
-				gObj->setRotation(rotation);
+				// No sprite for e.g. `SourceOfCurrent`: skip it
+				if (gObj == nullptr)
+					continue;
+
+				gObj->setAngle(rotation);
 				gObj->setPos(px, py);
 
 				EObject* eObj = dynamic_cast<EObject*>(gObj);
 				eObj->setValue(val);
 				eObj->setDimension(dim);
 
+				if (str == "Switch")
+					static_cast<Switch*>(gObj)->setState(
+						eObj->getValue() == Switch::ON );
+
 				mScene->addItem(gObj);
 			}
 		}
-
-	in.close();
 }
 
-void MainWindow::save(QString filename)
+void MainWindow::save(std::ostream& out)
 {
-	std::ofstream out( filename.toStdString() );
-
-	auto list = mScene->items();
+	// Bottom first: loading restores the stacking, so a reloaded scheme
+	// saves to the same text (undo compares snapshots)
+	auto list = mScene->items(Qt::AscendingOrder);
 
 		for (auto& i : list)
 			if ( i->type() == static_cast<int>(GObjectType::Item) )
@@ -427,7 +516,7 @@ void MainWindow::save(QString filename)
 						}
 					}
 
-				out << obj->getValue() << "\n";
+				out << obj->getString() << "\n";
 				out << obj->getDimension() << "\n";
 				out << i->pos().toPoint().x() << " "
 					<< i->pos().toPoint().y() << "\n";
@@ -445,34 +534,48 @@ void MainWindow::save(QString filename)
 					<< p->line().p2().toPoint().x() << "\n"
 					<< p->line().p2().toPoint().y() << "\n";
 			}
+}
 
-	out.close();
+void MainWindow::resetHistory()
+{
+	std::ostringstream out;
+	save(out);
+
+	mHistory = { out.str() };
+	mCurrent = 0;
+}
+
+void MainWindow::commit()
+{
+	std::ostringstream out;
+	save(out);
+
+	// e.g. an element picked up and dropped back
+	if ( out.str() == mHistory.at(mCurrent) )
+		return;
+
+	// Results belong to the old scheme
+	ui->play->setChecked(false);
+
+	mHistory.resize(mCurrent + 1);
+	mHistory.push_back( out.str() );
+	++mCurrent;
 }
 
 void MainWindow::undo()
 {
-	if (mCurFile == 0)
+	if (mCurrent == 0)
 		return;
 
-	QString num = QString::number( --mCurFile );
-	load(cDirectory + cFileName + num + ".scheme");
+	std::istringstream in( mHistory.at(--mCurrent) );
+	load(in);
 }
 
 void MainWindow::redo()
 {
-	if (mCurFile == mFullNum)
+	if (mCurrent + 1 == mHistory.size())
 		return;
 
-	if (mCurFile < mFullNum && !mWasChanged)
-	{
-		QString num = QString::number( ++mCurFile );
-		load(cDirectory + cFileName + num + ".scheme");
-		return;
-	}
-
-	if (mCurFile < mFullNum && mWasChanged)
-	{
-		mFullNum = mCurFile;
-		return;
-	}
+	std::istringstream in( mHistory.at(++mCurrent) );
+	load(in);
 }
